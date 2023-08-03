@@ -1,0 +1,25 @@
+{
+  "name": "hamkke-server",
+  "version": "1.0.0",
+  "description": "This is Hamkke Rest API Server",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chipmunk-and-acorns/hamkke_study_server.git"
+  },
+  "keywords": [
+    "hamkke",
+    "study",
+    "online",
+    "study"
+  ],
+  "author": "Jeong_Quokka",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chipmunk-and-acorns/hamkke_study_server/issues"
+  },
+  "homepage": "https://github.com/chipmunk-and-acorns/hamkke_study_server#readme"
+}
