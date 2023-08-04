@@ -2,14 +2,13 @@
   "include": ["src/**/*"],
   "exclude": ["node_modules"],
   "compilerOptions": {
-    "target": "ES5",
-    "module": "ESNext",
-    "removeComments": true,
+    "target": "ES2018",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "lib": ["ES2015", "DOM", "DOM.Iterable"]
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist"
   }
 }
