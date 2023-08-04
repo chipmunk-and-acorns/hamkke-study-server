@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const required = <T>(key: string, defaultValue?: T) => {
   const value = process.env[key] || defaultValue;
 
