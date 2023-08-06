@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,144 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model article {
+  article_id        BigInt            @id @default(autoincrement())
+  member_id         BigInt?
+  title             String?           @db.VarChar(255)
+  content           String?           @db.VarChar(1000)
+  recruitment_type  recruitmenttype?
+  recruitment_limit Int?
+  progress_mode     progressmode?
+  duration          Int?
+  closing_date      DateTime?         @db.Date
+  is_closed         Boolean?
+  view_count        Int?
+  like_count        Int?
+  created_at        DateTime          @db.Timestamp(6)
+  modified_at       DateTime          @db.Timestamp(6)
+  member            member?           @relation(fields: [member_id], references: [member_id], onDelete: NoAction, onUpdate: NoAction)
+  articleposition   articleposition[]
+  articlestack      articlestack[]
+  comment           comment[]
+}
+
+model articleposition {
+  article_position_id Int       @id @default(autoincrement())
+  article_id          BigInt?
+  position_id         Int?
+  article             article?  @relation(fields: [article_id], references: [article_id], onDelete: NoAction, onUpdate: NoAction)
+  position            position? @relation(fields: [position_id], references: [position_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model articlestack {
+  article_stack_id Int      @id @default(autoincrement())
+  article_id       BigInt?
+  stack_id         Int?
+  article          article? @relation(fields: [article_id], references: [article_id], onDelete: NoAction, onUpdate: NoAction)
+  stack            stack?   @relation(fields: [stack_id], references: [stack_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model banner {
+  banner_id    Int      @id @default(autoincrement())
+  banner_image String?  @db.VarChar(255)
+  order        Int
+  link_url     String?  @db.VarChar(255)
+  is_active    Boolean
+  created_at   DateTime @db.Timestamp(6)
+}
+
+model comment {
+  comment_id        BigInt    @id @default(autoincrement())
+  parent_comment_id BigInt?
+  article_id        BigInt?
+  member_id         BigInt?
+  created_at        DateTime  @db.Timestamp(6)
+  modified_at       DateTime  @db.Timestamp(6)
+  article           article?  @relation(fields: [article_id], references: [article_id], onDelete: NoAction, onUpdate: NoAction)
+  member            member?   @relation(fields: [member_id], references: [member_id], onDelete: NoAction, onUpdate: NoAction)
+  comment           comment?  @relation("commentTocomment", fields: [parent_comment_id], references: [comment_id], onDelete: NoAction, onUpdate: NoAction)
+  other_comment     comment[] @relation("commentTocomment")
+}
+
+model member {
+  member_id      BigInt           @id @default(autoincrement())
+  username       String?          @unique @db.VarChar(100)
+  password       String           @db.VarChar(255)
+  nickname       String           @db.VarChar(100)
+  role           role
+  status         status
+  member_image   String?          @db.VarChar(500)
+  introduction   String?          @db.VarChar(500)
+  created_at     DateTime         @db.Timestamp(6)
+  modified_at    DateTime         @db.Timestamp(6)
+  article        article[]
+  comment        comment[]
+  memberposition memberposition[]
+  memberstack    memberstack[]
+}
+
+model memberposition {
+  member_position_id Int       @id @default(autoincrement())
+  member_id          BigInt?
+  position_id        Int?
+  member             member?   @relation(fields: [member_id], references: [member_id], onDelete: NoAction, onUpdate: NoAction)
+  position           position? @relation(fields: [position_id], references: [position_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model memberstack {
+  member_stack_id Int     @id @default(autoincrement())
+  member_id       BigInt?
+  stack_id        Int?
+  member          member? @relation(fields: [member_id], references: [member_id], onDelete: NoAction, onUpdate: NoAction)
+  stack           stack?  @relation(fields: [stack_id], references: [stack_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model notification {
+  notification_id BigInt   @id @default(autoincrement())
+  title           String   @db.VarChar(255)
+  content         String   @db.VarChar(1000)
+  created_at      DateTime @db.Timestamp(6)
+  modified_at     DateTime @db.Timestamp(6)
+}
+
+model position {
+  position_id     Int               @id @default(autoincrement())
+  name            String?           @db.VarChar(50)
+  created_at      DateTime          @db.Timestamp(6)
+  modified_at     DateTime          @db.Timestamp(6)
+  articleposition articleposition[]
+  memberposition  memberposition[]
+}
+
+model stack {
+  stack_id     Int            @id @default(autoincrement())
+  name         String?        @db.VarChar(30)
+  stack_image  String?        @db.VarChar(255)
+  created_at   DateTime       @db.Timestamp(6)
+  modified_at  DateTime       @db.Timestamp(6)
+  articlestack articlestack[]
+  memberstack  memberstack[]
+}
+
+enum progressmode {
+  online
+  offline
+}
+
+enum recruitmenttype {
+  study
+  project
+}
+
+enum role {
+  member
+  admin
+}
+
+enum status {
+  active
+  readonly
+  blind
 }
