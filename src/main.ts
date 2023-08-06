@@ -1,9 +1,21 @@
 import express from 'express';
+
 import { env } from './util/env';
+import client from './config/redis';
 
 const app = express();
 const port = env.server.port;
 
+app.use(express.json());
+
 app.listen(port, async () => {
-  console.log('connect server!');
+  try {
+    await client.connect();
+
+    console.log('connect server!');
+    console.log('connect redis!');
+  } catch (error) {
+    console.error(error);
+    client.disconnect();
+  }
 });
