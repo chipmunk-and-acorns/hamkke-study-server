@@ -1,6 +1,11 @@
 import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
+const NODE_ENV = process.env.NODE_ENV;
+const file = NODE_ENV ? `.env.${NODE_ENV}` : '.env';
+dotenv.config({
+  path: path.join(__dirname, '..', '..', file),
+});
 
 const required = (key: string, defaultValue?: any) => {
   const value = process.env[key] || defaultValue;

@@ -13,8 +13,10 @@ RUN npm install
 # 소스 코드 복사
 COPY . .
 
+RUN npm run build
+
 # 서버 포트 설정
 EXPOSE 8080
 
 # 서버 실행
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]
