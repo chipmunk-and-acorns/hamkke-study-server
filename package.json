@@ -4,8 +4,9 @@
   "description": "This is Hamkke Rest API Server",
   "main": "main.js",
   "scripts": {
-    "start": "node dist/main.js",
+    "start": "NODE_ENV=production node dist/main.js",
     "build": "tsc",
+    "docker": "node dist/main.js",
     "dev": "NODE_ENV=development nodemon"
   },
   "repository": {

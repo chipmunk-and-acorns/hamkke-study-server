@@ -19,4 +19,4 @@ RUN npm run build
 EXPOSE 8080
 
 # 서버 실행
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "docker"]
