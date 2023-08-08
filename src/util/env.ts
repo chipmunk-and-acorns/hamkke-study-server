@@ -21,6 +21,12 @@ export const env = {
   server: {
     port: required('SERVER_PORT', 8080),
   },
+  middleware: {
+    morgan: required('MORGAN'),
+    cors: {
+      origin: required('CORS_ORIGIN', '*'),
+    },
+  },
   redis: {
     host: required('REDIS_HOST'),
     port: required('REDIS_PORT', 6397),
