@@ -1,9 +1,10 @@
 import express from 'express';
 
-import * as memberController from '../controller/member.controller';
+import * as memberController from '../controller/member.control';
+import { memberValid } from '../middleware/validation';
 
 const route = express.Router();
 
-route.post('/register', memberController.register);
+route.post('/register', memberValid.register, memberController.register);
 
 export default route;

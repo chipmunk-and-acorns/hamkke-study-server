@@ -3,7 +3,8 @@ import morgan from 'morgan';
 import cors from 'cors';
 
 import indexRoute from './route/index.route';
-import client from './config/redis';
+import client from './db/redis';
+import { pool } from './db/postgres';
 import { env } from './util/env';
 
 const app = express();
@@ -28,9 +29,11 @@ app.use('/api', indexRoute);
 
 app.listen(port, async () => {
   try {
+    await pool.query('SELECT NOW();');
     await client.connect();
 
     console.log('connect server!');
+    console.log('connect database!');
     console.log('connect redis!');
   } catch (error) {
     console.error(error);
