@@ -27,16 +27,23 @@ app.get('/', (_request: Request, response: Response) => {
 
 app.use('/api', indexRoute);
 
+console.log('trying to connect to server...');
 app.listen(port, async () => {
   try {
-    await pool.query('SELECT NOW();');
-    await client.connect();
-
     console.log('connect server!');
+    console.log('trying to connect to database...');
+    const dbResponse = await pool.query('SELECT NOW();').catch((error) => {
+      console.error('DB connection error:', error);
+      throw error;
+    });
     console.log('connect database!');
+
+    console.log('trying to connect to Redis...');
+    await client.connect();
     console.log('connect redis!');
   } catch (error) {
     console.error(error);
     client.disconnect();
+    pool.end();
   }
 });

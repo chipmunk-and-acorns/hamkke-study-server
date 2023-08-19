@@ -39,4 +39,17 @@ export const memberValid = {
       }
     },
   ],
+  login: [
+    check('username').isEmail().withMessage('유효한 이메일 주소를 입력해주세요.'),
+    check('password')
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]$/)
+      .withMessage(
+        '비밀번호는 최소 1개의 소문자, 대문자, 숫자, 특수문자(!@#$%^&*()_+)를 포함해야 합니다.',
+      )
+      .isLength({
+        min: 8,
+        max: 16,
+      })
+      .withMessage('비밀번호는 최소 8글자부터 최대 16글자까지 가능합니다.'),
+  ],
 };

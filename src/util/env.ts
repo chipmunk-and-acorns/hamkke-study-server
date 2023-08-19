@@ -30,8 +30,8 @@ export const env = {
   db: {
     host: required('POSTGRES_HOST'),
     user: required('POSTGRES_USER'),
-    port: required('POSTGRES_PORT'),
     secret: required('POSTGRES_PASSWORD'),
+    port: required('POSTGRES_PORT'),
     database: required('POSTGRES_DB'),
   },
   redis: {

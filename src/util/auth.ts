@@ -18,6 +18,14 @@ export const hashToPassword = (password: string) => {
   }
 };
 
+export const compareToPassword = (plainPassword: string, hashPassword: string) => {
+  try {
+    return bcrypt.compareSync(plainPassword, hashPassword);
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const createToken = (data: tokenMappingInformation, key: string, expiresIn: number) => {
   try {
     const token = jwt.sign(data, key, { expiresIn });
