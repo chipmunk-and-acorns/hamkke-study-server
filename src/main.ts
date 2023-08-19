@@ -32,7 +32,7 @@ app.listen(port, async () => {
   try {
     console.log('connect server!');
     console.log('trying to connect to database...');
-    const dbResponse = await pool.query('SELECT NOW();').catch((error) => {
+    await pool.query('SELECT NOW();').catch((error) => {
       console.error('DB connection error:', error);
       throw error;
     });

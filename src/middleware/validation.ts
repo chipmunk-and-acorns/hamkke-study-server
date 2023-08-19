@@ -5,7 +5,7 @@ export const memberValid = {
   register: [
     check('username').isEmail().withMessage('유효한 이메일 주소를 입력해주세요.'),
     check('password')
-      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()-=_+[\]{}|;:'",.<>/?]).{8,16}$/)
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()-=_+[\]{}|;:'",.<>/?])$/)
       .withMessage(
         '비밀번호는 최소 1개의 소문자, 대문자, 숫자, 특수문자(!@#$%^&*()_+)를 포함해야 합니다.',
       )
@@ -44,7 +44,7 @@ export const memberValid = {
   login: [
     check('username').isEmail().withMessage('유효한 이메일 주소를 입력해주세요.'),
     check('password')
-      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]$/)
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()-=_+[\]{}|;:'",.<>/?])$/)
       .withMessage(
         '비밀번호는 최소 1개의 소문자, 대문자, 숫자, 특수문자(!@#$%^&*()_+)를 포함해야 합니다.',
       )
