@@ -34,7 +34,9 @@ export const findById = async (memberId: number) => {
 
 export const findByUsername = async (username: string) => {
   const client = await pool.connect();
-  const { rows } = await client.query('SELECT * FROM member WHERE username=$1;', [username]);
+  const { rows } = await client.query<MemberDB>('SELECT * FROM member WHERE username=$1;', [
+    username,
+  ]);
   client.release();
 
   return rows;
