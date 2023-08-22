@@ -17,11 +17,11 @@ const questionAsync = (query) => {
 const main = async () => {
   try {
     console.log('Please enter your database configuration:');
-    const origin = await questionAsync('Client Origin(default: http://localhost:5173): ');
-    const user = await questionAsync('Database User: ');
+    const origin = await questionAsync('Client Origin URL(default: http://localhost:5173): ');
+    const user = await questionAsync('Database User(User Id): ');
     const password = await questionAsync('Database Password: ');
-    const accessKey = await questionAsync('Access Token Secret Key: ');
-    const refreshKey = await questionAsync('Access Token Secret Key: ');
+    const accessKey = await questionAsync('Access Token Secret Key(any string): ');
+    const refreshKey = await questionAsync('Refresh Token Secret Key(any string): ');
     const accessExpire = await questionAsync('Access Token Expire(default: 3600(1h)): ');
     const refreshExpire = await questionAsync('Access Token Expire(default: 604800(7d)): ');
 
@@ -42,7 +42,7 @@ JWT_ACCESS_EXPIRE=${accessExpire || 3600}
 JWT_REFRESH_EXPIRE=${refreshExpire || 604800}
 `.trimStart();
 
-    await fs.writeFile('.env.sample', envContent);
+    await fs.writeFile('.env', envContent);
     console.log('.env file has been created with the provided settings.');
   } catch (err) {
     console.error('Error creating .env file:', err);

@@ -46,4 +46,12 @@ export const env = {
       refreshExpire: Number(required('JWT_REFRESH_EXPIRE', 604800000)),
     },
   },
+  aws: {
+    s3: {
+      access: required('AWS_IMAGE_ACCESS'),
+      secret: required('AWS_IMAGE_SECRET'),
+      region: required('AWS_IMAGE_REGION'),
+      bucket: required('AWS_BUCKET_NAME'),
+    },
+  },
 };
