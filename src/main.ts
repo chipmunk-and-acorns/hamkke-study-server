@@ -1,11 +1,13 @@
 import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
 
-import indexRoute from './route/index.route';
-import client from './db/redis';
 import { pool } from './db/postgres';
 import { env } from './util/env';
+import indexRoute from './route/index.route';
+import client from './db/redis';
+import specs from './config/swagger';
 
 const app = express();
 const port = env.server.port;
@@ -21,10 +23,7 @@ app.use(
   }),
 );
 
-app.get('/', (_request: Request, response: Response) => {
-  response.status(200).send('Hello, Hamkke World!');
-});
-
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/api', indexRoute);
 
 console.log('trying to connect to server...');
