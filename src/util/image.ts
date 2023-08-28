@@ -14,10 +14,7 @@ export const getPresignedUrl = async (key: string) => {
         key,
       },
       Expires: 60 * 5,
-      Conditions: [
-        ['content-length-range', 1, 5 * 1024 * 1024],
-        ['starts-with', '$Content-Type', 'image/'],
-      ],
+      Conditions: [['content-length-range', 1, 5 * 1024 * 1024]],
     });
 
     return signedUrl;
