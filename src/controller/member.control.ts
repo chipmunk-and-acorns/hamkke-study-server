@@ -3,10 +3,10 @@ import { isEmpty } from 'lodash';
 
 import * as redis from '../util/redis';
 import { env } from '../util/env';
-import { compareToPassword, createToken, hashToPassword } from '../util/auth';
+import { compareToPassword, createToken, hashToPassword, verifyToken } from '../util/auth';
 import { findByUsername, saveMember } from '../repository/member.repo';
 import { PostMember } from '../types/member';
-import { MemberDB } from '../types/database';
+import { MemberDB, Role } from '../types/database';
 
 // 토큰 생성
 const createAccessAndRefreshToken = (member: MemberDB) => {
@@ -105,5 +105,31 @@ export const logout = async (request: Request, response: Response) => {
   } catch (error) {
     console.error(error);
     return response.status(500).json(error);
+  }
+};
+
+export const ReissueAccessUsingRefresh = async (request: Request, response: Response) => {
+  const { refreshToken } = request.body;
+
+  if (refreshToken == null) {
+    return response.sendStatus(401);
+  }
+
+  try {
+    const data = verifyToken(refreshToken, env.auth.jwt.refreshKey) as {
+      memberId: string;
+      role: Role;
+    };
+
+    const accessToken = createToken(
+      { memberId: Number(data.memberId), role: data.role },
+      env.auth.jwt.accessKey,
+      env.auth.jwt.accessExpire,
+    );
+
+    return response.status(201).json({ accessToken });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
   }
 };

@@ -1,5 +1,13 @@
 import client from '../db/redis';
 
+export const findData = async (key: string) => {
+  try {
+    return await client.get(key);
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const saveData = async (key: string, data: string, expire?: number) => {
   try {
     await client.set(key, data);

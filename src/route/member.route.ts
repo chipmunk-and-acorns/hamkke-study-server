@@ -9,5 +9,6 @@ const route = express.Router();
 route.post('/register', memberValid.register, memberController.register);
 route.post('/login', memberValid.login, memberController.login);
 route.post('/logout', authenticateToken, memberController.logout);
+route.post('/token', memberController.ReissueAccessUsingRefresh);
 
 export default route;
