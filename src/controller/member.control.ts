@@ -90,3 +90,20 @@ export const login = async (request: Request, response: Response) => {
     return response.status(500).json({ error });
   }
 };
+
+export const logout = async (request: Request, response: Response) => {
+  const member = response.locals.member;
+
+  try {
+    const result = await redis.deleteData(`refresh:${member.memberId}`);
+
+    if (result > 0) {
+      return response.sendStatus(204);
+    } else {
+      return response.status(400).json({ message: '로그인한 유저가 아닙니다.' });
+    }
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json(error);
+  }
+};

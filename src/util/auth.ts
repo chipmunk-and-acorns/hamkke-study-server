@@ -34,3 +34,12 @@ export const createToken = (data: tokenMappingInformation, key: string, expiresI
     throw error;
   }
 };
+
+export const verifyToken = (token: string, key: string) => {
+  try {
+    const decoded = jwt.verify(token, key);
+    return decoded;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -11,3 +11,11 @@ export const saveData = async (key: string, data: string, expire?: number) => {
     throw error;
   }
 };
+
+export const deleteData = async (key: string) => {
+  try {
+    return await client.del(key);
+  } catch (error) {
+    throw error;
+  }
+};
