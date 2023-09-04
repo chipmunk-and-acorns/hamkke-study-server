@@ -2,7 +2,7 @@ import express from 'express';
 
 import memberRoute from './member.route';
 import imageRoute from './image.route';
-import articleRoute from './image.route';
+import articleRoute from './article.route';
 
 const route = express.Router();
 

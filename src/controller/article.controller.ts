@@ -1,10 +1,38 @@
 import { Request, Response } from 'express';
 
+import { saveArticle } from '../repository/article.repo';
+import { articleDBToArticleDTO } from '../mapper/member/member.mapper';
+import { ArticlePost } from '../types/article';
+import { ArticleJoinMemberDB } from '../types/database';
+
 export const createArticle = async (request: Request, response: Response) => {
   // 1. body에서 필요한 데이터 받아오기
-  // 2. pool을 이용하여 생성
-  // 3. 생성한 데이터와 함께 리턴
-  return response.sendStatus(201);
+  const { title, content, recruitmentType, recruitmentLimit, progressMode, duration, closingDate } =
+    request.body;
+  const {
+    member: { memberId },
+  } = response.locals;
+
+  try {
+    // 2. pool을 이용하여 생성
+    const articlePost: ArticlePost = {
+      memberId,
+      title,
+      content,
+      recruitmentType,
+      recruitmentLimit,
+      progressMode,
+      duration,
+      closingDate,
+    };
+
+    const [result] = await saveArticle<ArticleJoinMemberDB>(articlePost);
+    const articleResponseDto = articleDBToArticleDTO(result);
+    return response.status(201).json(articleResponseDto);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
+  }
 };
 
 export const getArticleList = async (request: Request, response: Response) => {
