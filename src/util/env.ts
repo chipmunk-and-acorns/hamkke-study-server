@@ -19,10 +19,39 @@ const required = (key: string, defaultValue?: any) => {
 
 export const env = {
   server: {
-    port: required('SERVER_PORT', 8080),
+    port: Number(required('SERVER_PORT', 8080)),
+  },
+  middleware: {
+    morgan: required('MORGAN'),
+    cors: {
+      origin: required('CORS_ORIGIN', '*'),
+    },
+  },
+  db: {
+    host: required('POSTGRES_HOST'),
+    user: required('POSTGRES_USER'),
+    secret: required('POSTGRES_PASSWORD'),
+    port: required('POSTGRES_PORT'),
+    database: required('POSTGRES_DB'),
   },
   redis: {
     host: required('REDIS_HOST'),
-    port: required('REDIS_PORT', 6397),
+    port: Number(required('REDIS_PORT', 6397)),
+  },
+  auth: {
+    jwt: {
+      accessKey: required('JWT_ACCESS_KEY'),
+      accessExpire: Number(required('JWT_ACCESS_EXPIRE', 3600000)),
+      refreshKey: required('JWT_REFRESH_KEY'),
+      refreshExpire: Number(required('JWT_REFRESH_EXPIRE', 604800000)),
+    },
+  },
+  aws: {
+    s3: {
+      access: required('AWS_IMAGE_ACCESS'),
+      secret: required('AWS_IMAGE_SECRET'),
+      region: required('AWS_IMAGE_REGION'),
+      bucket: required('AWS_BUCKET_NAME'),
+    },
   },
 };
