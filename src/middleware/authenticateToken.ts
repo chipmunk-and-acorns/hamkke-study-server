@@ -18,7 +18,7 @@ const authenticateToken = (request: Request, response: Response, next: NextFunct
   const token = authHeader?.split(' ')[1];
 
   if (token == null) {
-    return response.status(401).json({ message: '유효하지 않은 토큰입니다.' });
+    return response.status(401).json({ message: '토큰이 비어있습니다.' });
   }
 
   try {
