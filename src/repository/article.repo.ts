@@ -86,7 +86,6 @@ export const deleteArticleById = async (articleId: number) => {
     const data = [articleId];
     const result = await client.query(query, data);
     await client.query('COMMIT;');
-    console.log(result);
 
     return result;
   } catch (error) {

@@ -42,7 +42,6 @@ export const createArticle = async (request: Request, response: Response) => {
 export const getArticleList = async (request: Request, response: Response) => {
   try {
     const result = await findArticles();
-    console.log(result);
     const articles = result.map((article) => articleDBToArticleResponseDto(article));
     return response.status(200).json(articles);
   } catch (error) {

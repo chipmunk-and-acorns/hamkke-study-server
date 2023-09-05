@@ -7,7 +7,6 @@ import { getPresignedUrl } from '../util/image';
 export const presigned = async (request: Request, response: Response) => {
   try {
     const { contentType } = request.query;
-    console.log(contentType);
     const imageKey = `${v4()}.${mime.extension(contentType as string)}`;
     const key = `raw/${imageKey}`;
 
