@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 
-import { saveArticle } from '../repository/article.repo';
-import { articleDBToArticleResponseDto } from '../mapper/member/member.mapper';
+import { findArticleById, findArticles, saveArticle } from '../repository/article.repo';
+import { articleDBToArticleResponseDto } from '../mapper/article.mapper';
 import { ArticlePost } from '../types/article';
 import { ArticleJoinMemberDB } from '../types/database';
+import { isEmpty } from 'lodash';
 
 export const createArticle = async (request: Request, response: Response) => {
-  // 1. body에서 필요한 데이터 받아오기
   const { title, content, recruitmentType, recruitmentLimit, progressMode, duration, closingDate } =
     request.body;
   const {
@@ -14,7 +14,6 @@ export const createArticle = async (request: Request, response: Response) => {
   } = response.locals;
 
   try {
-    // 2. pool을 이용하여 생성
     const articlePost: ArticlePost = {
       memberId,
       title,
@@ -36,17 +35,29 @@ export const createArticle = async (request: Request, response: Response) => {
 };
 
 export const getArticleList = async (request: Request, response: Response) => {
-  // 1. pool을 이용하여 게시글 전체 조회
-  // 2. 데이터와 함께 리턴
-  return response.sendStatus(200);
+  try {
+    const result = await findArticles();
+    const articles = result.map((article) => articleDBToArticleResponseDto(article));
+    return response.status(200).json(articles);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
+  }
 };
 
 export const getArticle = async (request: Request, response: Response) => {
-  // 1. params에서 id 받아오기
-  // 2. 데이터베이스 조회
-  // 3-1. 데이터가 없으면 에러
-  // 3-2. 데이터가 있으면 리턴
-  return response.sendStatus(200);
+  const { id } = request.params;
+  try {
+    const [result] = await findArticleById(parseInt(id));
+    if (isEmpty(result)) {
+      return response.status(400).json({ message: '존재하지 않는 게시글 아이디입니다.' });
+    }
+    const articleResponse = articleDBToArticleResponseDto(result);
+    return response.status(200).json(articleResponse);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
+  }
 };
 
 export const updateArticle = async (request: Request, response: Response) => {

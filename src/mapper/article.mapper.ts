@@ -1,12 +1,12 @@
-import { ArticleResponseDto } from '../../types/article';
+import { ArticleResponseDto } from '../types/article';
 import {
   ArticleJoinMemberDB,
   ProgressMode,
   RecruitmentType,
   Role,
   Status,
-} from '../../types/database';
-import { snakeToCamel } from '../common/changeCase.mapper';
+} from '../types/database';
+import { snakeToCamel } from './changeCase.mapper';
 
 interface RawData {
   articleId: number;
