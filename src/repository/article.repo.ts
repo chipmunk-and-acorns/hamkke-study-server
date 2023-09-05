@@ -3,10 +3,15 @@ import { ArticlePost } from '../types/article';
 import { ArticleJoinMemberDB } from '../types/database';
 
 export const saveArticle = async <T extends ArticleJoinMemberDB>(article: ArticlePost) => {
+  const client = await pool.connect();
+
   try {
-    const client = await pool.connect();
-    const query =
-      'WITH inserted_article as (INSERT INTO article(member_id, title, content, recruitment_type, recruitment_limit, progress_mode, duration, closing_date) values ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *) SELECT * FROM inserted_article LEFT JOIN member ON inserted_article.member_id = member.member_id;';
+    const query = `WITH 
+        a as (INSERT INTO article(member_id, title, content, recruitment_type, recruitment_limit, progress_mode, duration, closing_date) values ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *) 
+        SELECT 
+          a.article_id, a.member_id, a.title, a.content, a.recruitment_type, a.recruitment_limit, a.progress_mode, a.duration, a.closing_date, a.view_count, a.like_count, a.is_closed, a.is_deleted, a.created_at, a.modified_at, m.username, m.password, m.nickname, m.role, m.status, m.member_image, m.introduction, m.is_deleted as destroy
+        FROM a
+        LEFT JOIN member as m ON a.member_id = m.member_id;`;
     const data = [
       article.memberId,
       article.title,
@@ -18,40 +23,76 @@ export const saveArticle = async <T extends ArticleJoinMemberDB>(article: Articl
       article.closingDate,
     ];
     const { rows } = await client.query<T>(query, data);
-    client.release();
+    await client.query('COMMIT;');
 
     return rows;
   } catch (error) {
+    client.query('ROLLBACK');
     throw error;
+  } finally {
+    client.release();
   }
 };
 
 export const findArticles = async () => {
+  const client = await pool.connect();
+
   try {
-    const client = await pool.connect();
-    const query = 'SELECT * FROM article LEFT JOIN member ON article.member_id = member.member_id';
+    const query = `
+    SELECT 
+    a.article_id, a.member_id, a.title, a.content, a.recruitment_type, a.recruitment_limit, a.progress_mode, a.duration, a.closing_date, a.view_count, a.like_count, a.is_closed, a.is_deleted, a.created_at, a.modified_at, m.username, m.password, m.nickname, m.role, m.status, m.member_image, m.introduction, m.is_deleted as destroy
+    FROM article as a
+    LEFT JOIN member as m ON a.member_id = m.member_id
+    WHERE a.is_deleted = false
+    ORDER BY a.created_at`;
     const { rows } = await client.query<ArticleJoinMemberDB>(query);
-    client.release();
 
     return rows;
   } catch (error) {
     throw error;
+  } finally {
+    client.release();
   }
 };
 export const findArticleById = async (articleId: number) => {
+  const client = await pool.connect();
+
   try {
-    const client = await pool.connect();
-    const query =
-      'SELECT * FROM article LEFT JOIN member ON article.member_id = member.member_id WHERE article.article_id = $1';
+    const query = `
+      SELECT
+      a.article_id, a.member_id, a.title, a.content, a.recruitment_type, a.recruitment_limit, a.progress_mode, a.duration, a.closing_date, a.view_count, a.like_count, a.is_closed, a.is_deleted, a.created_at, a.modified_at, m.username, m.password, m.nickname, m.role, m.status, m.member_image, m.introduction, m.is_deleted as destroy
+      FROM article 
+      LEFT JOIN member ON article.member_id = member.member_id 
+      WHERE article.article_id = $1`;
     const data = [articleId];
     const { rows } = await client.query<ArticleJoinMemberDB>(query, data);
-    client.release();
 
     return rows;
   } catch (error) {
     throw error;
+  } finally {
+    client.release();
   }
 };
+
 export const updateArticleById = async (articleId: number) => {};
+
 export const completeArticleById = async (articleId: number) => {};
-export const deleteArticleById = async (articleId: number) => {};
+
+export const deleteArticleById = async (articleId: number) => {
+  const client = await pool.connect();
+  try {
+    const query = 'UPDATE article SET is_deleted = true WHERE article_id = $1 RETURNING *';
+    const data = [articleId];
+    const result = await client.query(query, data);
+    await client.query('COMMIT;');
+    console.log(result);
+
+    return result;
+  } catch (error) {
+    client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};

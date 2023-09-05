@@ -39,6 +39,7 @@ CREATE TABLE "member" (
   "status" status NOT NULL DEFAULT 'active',
   "member_image" varchar(500),
   "introduction" varchar(500),
+  "is_deleted" BOOLEAN NOT NULL DEFAULT false,
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "modified_at" timestamp NOT NULL DEFAULT (now())
 );
@@ -53,9 +54,10 @@ CREATE TABLE "article" (
   "progress_mode" progress_mode NOT NULL,
   "duration" int NOT NULL,
   "closing_date" DATE NOT NULL,
-  "is_closed" BOOLEAN NOT NULL DEFAULT false,
   "view_count" int NOT NULL DEFAULT 0,
   "like_count" int NOT NULL DEFAULT 0,
+  "is_closed" BOOLEAN NOT NULL DEFAULT false,
+  "is_deleted" BOOLEAN NOT NULL DEFAULT false,
   "created_at" timestamp with time zone NOT NULL DEFAULT (now()),
   "modified_at" timestamp with time zone NOT NULL DEFAULT (now())
 );

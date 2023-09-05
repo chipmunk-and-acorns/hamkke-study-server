@@ -20,9 +20,10 @@ export interface ArticleResponseDto {
   progressMode: ProgressMode;
   duration: number;
   closingDate: Date;
-  isClosed: boolean;
   viewCount: number;
   likeCount: number;
+  isClosed: boolean;
+  isDeleted: boolean;
   createdAt: Date;
   modifiedAt: Date;
   member: {
@@ -32,5 +33,6 @@ export interface ArticleResponseDto {
     status: Status;
     memberImage: string | null;
     introduction: string;
+    isDeleted: boolean;
   };
 }

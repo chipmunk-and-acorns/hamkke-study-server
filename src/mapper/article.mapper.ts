@@ -17,9 +17,10 @@ interface RawData {
   progressMode: ProgressMode;
   duration: number;
   closingDate: Date;
-  isClosed: boolean;
   viewCount: number;
   likeCount: number;
+  isClosed: boolean;
+  isDeleted: boolean;
   createdAt: Date;
   modifiedAt: Date;
   memberId?: number;
@@ -30,6 +31,7 @@ interface RawData {
   status?: Status;
   memberImage?: string | null;
   introduction?: string;
+  destroy?: boolean;
   member: {
     memberId: number;
     nickname: string;
@@ -37,6 +39,7 @@ interface RawData {
     status: Status;
     memberImage: string | null;
     introduction: string;
+    isDeleted: boolean;
   };
 }
 
@@ -51,6 +54,7 @@ export const articleDBToArticleResponseDto = (article: ArticleJoinMemberDB): Art
       status: data.status,
       memberImage: data.memberImage,
       introduction: data.introduction,
+      isDeleted: data.destroy,
     },
   };
 
@@ -62,6 +66,7 @@ export const articleDBToArticleResponseDto = (article: ArticleJoinMemberDB): Art
   delete articleResponse.status;
   delete articleResponse.memberImage;
   delete articleResponse.introduction;
+  delete articleResponse.destroy;
 
   return articleResponse;
 };

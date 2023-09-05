@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
 
-import { findArticleById, findArticles, saveArticle } from '../repository/article.repo';
+import {
+  deleteArticleById,
+  findArticleById,
+  findArticles,
+  saveArticle,
+} from '../repository/article.repo';
 import { articleDBToArticleResponseDto } from '../mapper/article.mapper';
 import { ArticlePost } from '../types/article';
 import { ArticleJoinMemberDB } from '../types/database';
@@ -37,6 +42,7 @@ export const createArticle = async (request: Request, response: Response) => {
 export const getArticleList = async (request: Request, response: Response) => {
   try {
     const result = await findArticles();
+    console.log(result);
     const articles = result.map((article) => articleDBToArticleResponseDto(article));
     return response.status(200).json(articles);
   } catch (error) {
@@ -73,18 +79,55 @@ export const updateArticle = async (request: Request, response: Response) => {
 
 export const completeArticle = async (request: Request, response: Response) => {
   // 1. params에서 id 받아오기
-  // 2. 데이터 베이스 조회
-  // 2.5. 데이터 없음 or 이미 모집완료된 게시글 -> 에러
-  // 3. 내가 작성한 게시글 체크
-  // 4. 성공 응답
-  return response.sendStatus(200);
+  const { id } = request.params;
+  const { member } = response.locals;
+
+  try {
+    const [result] = await findArticleById(parseInt(id));
+
+    if (isEmpty(result)) {
+      return response.status(400).json({ message: '존재하지 않는 게시글 아이디입니다.' });
+    }
+
+    if (result.member_id !== member.memberId) {
+      return response.status(403).json({ message: '게시글 작성자가 아닙니다.' });
+    }
+
+    if (result.is_closed) {
+      return response.status(409).json({ message: '이미 모집이 완료된 게시글입니다.' });
+    }
+    // 4. 성공 응답
+    const articleDto = articleDBToArticleResponseDto(result);
+    return response.status(200).json(articleDto);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
+  }
 };
 
 export const deleteArticle = async (request: Request, response: Response) => {
-  // 1. params에서 id 받아오기
-  // 2. 게시글 조회
-  // 3. 내가 작성한 게시글 체크
-  // 4. 게시글 삭제 (soft delete 고려)
-  // 5. 성공 응답
-  return response.sendStatus(204);
+  const { id } = request.params;
+  const { member } = response.locals;
+  try {
+    const [result] = await findArticleById(parseInt(id));
+
+    if (isEmpty(result)) {
+      return response.status(400).json({ message: '존재하지 않은 게시글입니다.' });
+    } else if (Number(result.member_id) !== Number(member.memberId)) {
+      return response.status(403).json({ message: '글 작성자가 아닙니다.' });
+    } else if (result.is_deleted) {
+      return response.status(400).json({ message: '이미 삭제된 게시글입니다.' });
+    }
+
+    const { rowCount } = await deleteArticleById(parseInt(id));
+
+    if (rowCount > 0) {
+      return response.sendStatus(204);
+    } else {
+      throw new Error('알수 없는 이유로 게시글을 삭제하는데 실패했습니다.');
+    }
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
+  }
 };

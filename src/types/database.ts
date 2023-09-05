@@ -17,6 +17,7 @@ export interface MemberDB {
   member_image: null | string;
   role: Role;
   active: Status;
+  is_deleted: boolean;
   created_at: Date;
   modified_at: Date;
 }
@@ -42,9 +43,10 @@ export interface ArticleDB {
   progress_mode: ProgressMode;
   duration: number;
   closing_date: Date;
-  is_closed: boolean;
   view_count: number;
   like_count: number;
+  is_closed: boolean;
+  is_deleted: boolean;
   created_at: Date;
   modified_at: Date;
 }
@@ -57,4 +59,5 @@ export interface ArticleJoinMemberDB extends ArticleDB {
   status: Status;
   member_image: string | null;
   introduction: string;
+  destroy: boolean;
 }
