@@ -1,5 +1,3 @@
-import camelCaseKeys from 'camelcase-keys';
-
 import { ArticleResponseDto } from '../../types/article';
 import {
   ArticleJoinMemberDB,
@@ -8,6 +6,7 @@ import {
   Role,
   Status,
 } from '../../types/database';
+import { snakeToCamel } from '../common/changeCase.mapper';
 
 interface RawData {
   articleId: number;
@@ -23,12 +22,13 @@ interface RawData {
   likeCount: number;
   createdAt: Date;
   modifiedAt: Date;
+  memberId?: number;
   username?: string;
   password?: string;
   nickname?: string;
   role?: Role;
   status?: Status;
-  member_image?: string | null;
+  memberImage?: string | null;
   introduction?: string;
   member: {
     memberId: number;
@@ -40,8 +40,8 @@ interface RawData {
   };
 }
 
-export const articleDBToArticleDTO = (article: ArticleJoinMemberDB): ArticleResponseDto => {
-  const data = camelCaseKeys(article);
+export const articleDBToArticleResponseDto = (article: ArticleJoinMemberDB): ArticleResponseDto => {
+  const data = snakeToCamel<ArticleJoinMemberDB>(article);
   const articleResponse: RawData = {
     ...data,
     member: {
@@ -54,12 +54,13 @@ export const articleDBToArticleDTO = (article: ArticleJoinMemberDB): ArticleResp
     },
   };
 
+  delete articleResponse.memberId;
   delete articleResponse.username;
   delete articleResponse.password;
   delete articleResponse.nickname;
   delete articleResponse.role;
   delete articleResponse.status;
-  delete articleResponse.member_image;
+  delete articleResponse.memberImage;
   delete articleResponse.introduction;
 
   return articleResponse;

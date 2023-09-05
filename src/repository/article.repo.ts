@@ -1,4 +1,4 @@
-import { pool } from '../db/postgres';
+import { pool } from '../db/postgresDB';
 import { ArticlePost } from '../types/article';
 import { ArticleJoinMemberDB } from '../types/database';
 

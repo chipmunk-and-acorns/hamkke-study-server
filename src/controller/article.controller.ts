@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { saveArticle } from '../repository/article.repo';
-import { articleDBToArticleDTO } from '../mapper/member/member.mapper';
+import { articleDBToArticleResponseDto } from '../mapper/member/member.mapper';
 import { ArticlePost } from '../types/article';
 import { ArticleJoinMemberDB } from '../types/database';
 
@@ -27,7 +27,7 @@ export const createArticle = async (request: Request, response: Response) => {
     };
 
     const [result] = await saveArticle<ArticleJoinMemberDB>(articlePost);
-    const articleResponseDto = articleDBToArticleDTO(result);
+    const articleResponseDto = articleDBToArticleResponseDto(result);
     return response.status(201).json(articleResponseDto);
   } catch (error) {
     console.error(error);
