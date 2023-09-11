@@ -1,5 +1,5 @@
 import { pool } from '../db/postgresDB';
-import { ArticlePost } from '../types/article';
+import { ArticlePost, ArticleUpdate } from '../types/article';
 import { ArticleJoinMemberDB } from '../types/database';
 
 export const saveArticle = async <T extends ArticleJoinMemberDB>(article: ArticlePost) => {
@@ -54,6 +54,7 @@ export const findArticles = async () => {
     client.release();
   }
 };
+
 export const findArticleById = async (articleId: number) => {
   const client = await pool.connect();
 
@@ -61,9 +62,9 @@ export const findArticleById = async (articleId: number) => {
     const query = `
       SELECT
       a.article_id, a.member_id, a.title, a.content, a.recruitment_type, a.recruitment_limit, a.progress_mode, a.duration, a.closing_date, a.view_count, a.like_count, a.is_closed, a.is_deleted, a.created_at, a.modified_at, m.username, m.password, m.nickname, m.role, m.status, m.member_image, m.introduction, m.is_deleted as destroy
-      FROM article 
-      LEFT JOIN member ON article.member_id = member.member_id 
-      WHERE article.article_id = $1`;
+      FROM article as a
+      LEFT JOIN member as m ON a.member_id = m.member_id 
+      WHERE a.article_id = $1`;
     const data = [articleId];
     const { rows } = await client.query<ArticleJoinMemberDB>(query, data);
 
@@ -75,9 +76,46 @@ export const findArticleById = async (articleId: number) => {
   }
 };
 
-export const updateArticleById = async (articleId: number) => {};
+export const updateArticleById = async (articleId: number, updateArticle: ArticleUpdate) => {
+  const client = await pool.connect();
 
-export const completeArticleById = async (articleId: number) => {};
+  try {
+    const data = Object.entries(updateArticle).reduce((acc, [key, value], idx) => {
+      const convertValue = typeof value === 'string' ? `'${value}'` : value;
+      return (
+        acc + `${key} = ${convertValue}${idx === Object.keys(updateArticle).length - 1 ? '' : ','}`
+      );
+    }, '');
+    const query = `UPDATE article SET ${data} WHERE article_id = $1 RETURNING *`;
+    const result = await client.query(query, [articleId]);
+    await client.query('COMMIT;');
+
+    return result;
+  } catch (error) {
+    client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+export const completeArticleById = async (articleId: number) => {
+  const client = await pool.connect();
+
+  try {
+    const result = await client.query('UPDATE article SET is_closed = true WHERE article_id = $1', [
+      articleId,
+    ]);
+    await client.query('COMMIT;');
+
+    return result;
+  } catch (error) {
+    client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
 
 export const deleteArticleById = async (articleId: number) => {
   const client = await pool.connect();

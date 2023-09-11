@@ -11,6 +11,16 @@ export interface ArticlePost {
   memberId: number;
 }
 
+export interface ArticleUpdate {
+  title: string;
+  content: string;
+  recruitment_type: RecruitmentType;
+  recruitment_limit: number;
+  progress_mode: ProgressMode;
+  duration: number;
+  closing_date: Date;
+}
+
 export interface ArticleResponseDto {
   articleId: number;
   title: string;

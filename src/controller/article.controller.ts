@@ -1,15 +1,18 @@
 import { Request, Response } from 'express';
 
 import {
+  completeArticleById,
   deleteArticleById,
   findArticleById,
   findArticles,
   saveArticle,
+  updateArticleById,
 } from '../repository/article.repo';
 import { articleDBToArticleResponseDto } from '../mapper/article.mapper';
 import { ArticlePost } from '../types/article';
 import { ArticleJoinMemberDB } from '../types/database';
 import { isEmpty } from 'lodash';
+import { camelToSnake } from '../mapper/changeCase.mapper';
 
 export const createArticle = async (request: Request, response: Response) => {
   const { title, content, recruitmentType, recruitmentLimit, progressMode, duration, closingDate } =
@@ -66,18 +69,42 @@ export const getArticle = async (request: Request, response: Response) => {
 };
 
 export const updateArticle = async (request: Request, response: Response) => {
-  // 1. params에서 id 받아오기
-  // 2. 데이터베이스 데이터 조회
-  // 2.5 데이터가 없으면 에러
-  // 3. 내가 작성한 게시글인지 확인
-  // 3.5 내가 작성한 게시글이 아니라면 에러
-  // 4. 데이터 업데이트
-  // 5. 업데이트 데이터와 함께 리턴
-  return response.sendStatus(200);
+  const { id } = request.params;
+  const { title, content, recruitmentType, recruitmentLimit, progressMode, duration, closingDate } =
+    request.body;
+  const { member } = response.locals;
+
+  try {
+    const [findArticle] = await findArticleById(parseInt(id));
+
+    if (isEmpty(findArticle)) {
+      return response.status(400).json({ message: '존재하지 않는 게시글 아이디입니다.' });
+    } else if (Number(findArticle.member_id) !== member.memberId) {
+      return response.status(400).json({ message: '게시글 작성자가 아닙니다.' });
+    }
+
+    const updateData = {
+      title,
+      content,
+      recruitmentType,
+      recruitmentLimit,
+      progressMode,
+      duration,
+      closingDate,
+    };
+
+    const snakeCaseUpdateData = camelToSnake(updateData);
+    console.log(snakeCaseUpdateData);
+    const { rows } = await updateArticleById(parseInt(id), snakeCaseUpdateData);
+
+    return response.status(200).json(rows[0]);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
+  }
 };
 
 export const completeArticle = async (request: Request, response: Response) => {
-  // 1. params에서 id 받아오기
   const { id } = request.params;
   const { member } = response.locals;
 
@@ -88,16 +115,15 @@ export const completeArticle = async (request: Request, response: Response) => {
       return response.status(400).json({ message: '존재하지 않는 게시글 아이디입니다.' });
     }
 
-    if (result.member_id !== member.memberId) {
+    if (Number(result.member_id) !== member.memberId) {
       return response.status(403).json({ message: '게시글 작성자가 아닙니다.' });
     }
 
     if (result.is_closed) {
       return response.status(409).json({ message: '이미 모집이 완료된 게시글입니다.' });
     }
-    // 4. 성공 응답
-    const articleDto = articleDBToArticleResponseDto(result);
-    return response.status(200).json(articleDto);
+    await completeArticleById(parseInt(id));
+    return response.sendStatus(204);
   } catch (error) {
     console.error(error);
     return response.status(500).json({ error });
