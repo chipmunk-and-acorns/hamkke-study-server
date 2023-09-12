@@ -137,7 +137,24 @@ export const updateArticleById = async (articleId: number, updateArticle: Articl
 
     return result;
   } catch (error) {
-    client.query('ROLLBACK');
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+// 게시글 조회수 증가시키는 쿼리
+export const increaseArticleViewCount = async (articleId: number, count: number) => {
+  const client = await pool.connect();
+
+  try {
+    const query = `UPDATE article SET view_count = $1 WHERE article_id = $2`;
+    const data = [count, articleId];
+
+    await client.query(query, data);
+  } catch (error) {
+    await client.query('ROLLBACK');
     throw error;
   } finally {
     client.release();
@@ -155,7 +172,7 @@ export const completeArticleById = async (articleId: number) => {
 
     return result;
   } catch (error) {
-    client.query('ROLLBACK');
+    await client.query('ROLLBACK');
     throw error;
   } finally {
     client.release();

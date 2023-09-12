@@ -12,11 +12,14 @@ import {
   deleteArticleById,
   findArticleById,
   findArticles,
+  increaseArticleViewCount,
   saveArticle,
   updateArticleById,
 } from '../repository/article.repo';
 import { findStackListByArticleId } from '../repository/stack.repo';
 import { findPositionListByArticleId } from '../repository/position.repo';
+import { getClientIp } from '../util/ip';
+import { findData, saveData } from '../util/redis';
 
 export const createArticle = async (request: Request, response: Response) => {
   const {
@@ -78,17 +81,46 @@ export const getArticleList = async (_request: Request, response: Response) => {
 
 export const getArticle = async (request: Request, response: Response) => {
   const { id } = request.params;
+  const { member } = response.locals;
+
   try {
     const [result] = await findArticleById(parseInt(id));
     if (isEmpty(result)) {
       return response.status(400).json({ message: '존재하지 않는 게시글 아이디입니다.' });
     }
 
-    const { rows: stackRows } = await findStackListByArticleId(parseInt(id));
-    const { rows: positionRows } = await findPositionListByArticleId(parseInt(id));
+    if (isEmpty(member)) {
+      // 비회원일 경우 ip로 체크
+      const ip = getClientIp(request);
+      const viewIpInRedis = await findData(`article:${id}:viewIP:${ip}`);
 
-    const stacks = stackRows.map((stack: StackDB) => snakeToCamel(stack));
-    const positions = positionRows.map((position: PositionDB) => snakeToCamel(position));
+      if (viewIpInRedis == null) {
+        await saveData(`article:${id}:viewIP:${ip}`, ip, 60 * 60 * 2);
+        await increaseArticleViewCount(parseInt(id), result.view_count + 1);
+        result.view_count++;
+      }
+    } else {
+      // 회원일 경우 member_id로 체크
+      const viewMemberIdInRedis = await findData(`article:${id}:viewMemberId:${member.memberId}`);
+
+      if (viewMemberIdInRedis == null) {
+        await saveData(
+          `article:${id}:viewMemberId:${member.memberId}`,
+          member.memberId,
+          60 * 60 * 24,
+        );
+        await increaseArticleViewCount(parseInt(id), result.view_count + 1);
+        result.view_count++;
+      }
+    }
+
+    const [stackResult, positionResult] = await Promise.all([
+      findStackListByArticleId(parseInt(id)),
+      findPositionListByArticleId(parseInt(id)),
+    ]);
+
+    const stacks = stackResult.rows.map((stack: StackDB) => snakeToCamel(stack));
+    const positions = positionResult.rows.map((position: PositionDB) => snakeToCamel(position));
 
     const articleResponse = articleDBToArticleResponseDto(result);
     return response.status(200).json({ ...articleResponse, stacks, positions });

@@ -8,15 +8,15 @@ import {
   getArticleList,
   updateArticle,
 } from '../controller/article.controller';
-import authenticateToken from '../middleware/authenticateToken';
+import authenticateToken, { requireTokenCheck } from '../middleware/authenticateToken';
 
 const route = express.Router();
 
-route.post('/', authenticateToken, createArticle);
+route.post('/', authenticateToken, requireTokenCheck, createArticle);
 route.get('/', getArticleList);
-route.get('/:id', getArticle);
-route.put('/:id', authenticateToken, updateArticle);
-route.patch('/complete/:id', authenticateToken, completeArticle);
-route.delete('/:id', authenticateToken, deleteArticle);
+route.get('/:id', authenticateToken, getArticle);
+route.put('/:id', authenticateToken, requireTokenCheck, updateArticle);
+route.patch('/complete/:id', authenticateToken, requireTokenCheck, completeArticle);
+route.delete('/:id', authenticateToken, requireTokenCheck, deleteArticle);
 
 export default route;
