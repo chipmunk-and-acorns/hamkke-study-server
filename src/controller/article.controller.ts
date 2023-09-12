@@ -1,5 +1,12 @@
 import { Request, Response } from 'express';
+import { isEmpty } from 'lodash';
 
+import { ArticlePost } from '../types/article';
+import { ArticleJoinMemberDB, PositionDB, StackDB } from '../types/database';
+import { camelToSnake, snakeToCamel } from '../mapper/changeCase.mapper';
+import { articleDBToArticleResponseDto } from '../mapper/article.mapper';
+import { saveArticleStack } from '../repository/articleStack.repo';
+import { saveArticlePosition } from '../repository/articlePosition.repo';
 import {
   completeArticleById,
   deleteArticleById,
@@ -8,15 +15,21 @@ import {
   saveArticle,
   updateArticleById,
 } from '../repository/article.repo';
-import { articleDBToArticleResponseDto } from '../mapper/article.mapper';
-import { ArticlePost } from '../types/article';
-import { ArticleJoinMemberDB } from '../types/database';
-import { isEmpty } from 'lodash';
-import { camelToSnake } from '../mapper/changeCase.mapper';
+import { findStackListByArticleId } from '../repository/stack.repo';
+import { findPositionListByArticleId } from '../repository/position.repo';
 
 export const createArticle = async (request: Request, response: Response) => {
-  const { title, content, recruitmentType, recruitmentLimit, progressMode, duration, closingDate } =
-    request.body;
+  const {
+    title,
+    content,
+    recruitmentType,
+    recruitmentLimit,
+    progressMode,
+    duration,
+    closingDate,
+    stackIds,
+    positionIds,
+  } = request.body;
   const {
     member: { memberId },
   } = response.locals;
@@ -33,19 +46,29 @@ export const createArticle = async (request: Request, response: Response) => {
       closingDate,
     };
 
-    const [result] = await saveArticle<ArticleJoinMemberDB>(articlePost);
-    const articleResponseDto = articleDBToArticleResponseDto(result);
-    return response.status(201).json(articleResponseDto);
+    const [article] = await saveArticle<ArticleJoinMemberDB>(articlePost);
+
+    await Promise.all([
+      stackIds.forEach((stackId: number) => saveArticleStack(article.article_id, stackId)),
+      positionIds.forEach((positionId: number) =>
+        saveArticlePosition(article.article_id, positionId),
+      ),
+    ]);
+
+    return response.status(201).json({
+      articleId: article.article_id,
+    });
   } catch (error) {
     console.error(error);
     return response.status(500).json({ error });
   }
 };
 
-export const getArticleList = async (request: Request, response: Response) => {
+export const getArticleList = async (_request: Request, response: Response) => {
   try {
     const result = await findArticles();
     const articles = result.map((article) => articleDBToArticleResponseDto(article));
+
     return response.status(200).json(articles);
   } catch (error) {
     console.error(error);
@@ -60,8 +83,15 @@ export const getArticle = async (request: Request, response: Response) => {
     if (isEmpty(result)) {
       return response.status(400).json({ message: '존재하지 않는 게시글 아이디입니다.' });
     }
+
+    const { rows: stackRows } = await findStackListByArticleId(parseInt(id));
+    const { rows: positionRows } = await findPositionListByArticleId(parseInt(id));
+
+    const stacks = stackRows.map((stack: StackDB) => snakeToCamel(stack));
+    const positions = positionRows.map((position: PositionDB) => snakeToCamel(position));
+
     const articleResponse = articleDBToArticleResponseDto(result);
-    return response.status(200).json(articleResponse);
+    return response.status(200).json({ ...articleResponse, stacks, positions });
   } catch (error) {
     console.error(error);
     return response.status(500).json({ error });
@@ -94,7 +124,6 @@ export const updateArticle = async (request: Request, response: Response) => {
     };
 
     const snakeCaseUpdateData = camelToSnake(updateData);
-    console.log(snakeCaseUpdateData);
     const { rows } = await updateArticleById(parseInt(id), snakeCaseUpdateData);
 
     return response.status(200).json(rows[0]);

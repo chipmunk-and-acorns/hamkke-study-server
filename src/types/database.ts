@@ -61,3 +61,18 @@ export interface ArticleJoinMemberDB extends ArticleDB {
   introduction: string;
   destroy: boolean;
 }
+
+// Stack
+export interface StackDB {
+  stack_id: number;
+  name: string;
+  created_at: Date;
+  modified_at: Date;
+}
+
+export interface PositionDB {
+  position_id: number;
+  name: string;
+  created_at: Date;
+  modified_at: Date;
+}
