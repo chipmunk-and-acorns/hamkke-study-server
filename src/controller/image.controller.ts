@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
+import { v4 } from 'uuid';
 import mime from 'mime-types';
 
 import { getPresignedUrl } from '../util/image';
-import { v4 } from 'uuid';
 
 export const presigned = async (request: Request, response: Response) => {
   try {
     const { contentType } = request.query;
-    console.log(contentType);
     const imageKey = `${v4()}.${mime.extension(contentType as string)}`;
     const key = `raw/${imageKey}`;
 

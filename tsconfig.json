@@ -2,7 +2,7 @@
   "include": ["src/**/*"],
   "exclude": ["node_modules"],
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "ES6",
     "module": "CommonJS",
     "moduleResolution": "Node",
     "strict": true,
@@ -12,5 +12,8 @@
     "outDir": "dist",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
+  },
+  "ts-node": {
+    "esm": true
   }
 }

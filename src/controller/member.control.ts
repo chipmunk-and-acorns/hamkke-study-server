@@ -69,6 +69,11 @@ export const login = async (request: Request, response: Response) => {
 
   try {
     const [findMember] = await findByUsername(username);
+
+    if (isEmpty(findMember)) {
+      return response.status(400).json({ message: '존재하지 않는 아이디입니다.' });
+    }
+
     const match = compareToPassword(password, findMember.password);
 
     if (isEmpty(findMember) || !match) {

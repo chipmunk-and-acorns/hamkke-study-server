@@ -3,11 +3,11 @@ import morgan from 'morgan';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 
-import { pool } from './db/postgres';
+import { pool } from './db/postgresDB';
 import { env } from './util/env';
+import specs from './config/swagger';
 import indexRoute from './route/index.route';
 import client from './db/redis';
-import specs from './config/swagger';
 
 const app = express();
 const port = env.server.port;
