@@ -1,5 +1,9 @@
 import { ProgressMode, RecruitmentType, Role, Status } from './database';
 
+export enum PlusOrMinus {
+  PLUS = '+',
+  MINUS = '-',
+}
 export interface ArticlePost {
   title: string;
   content: string;

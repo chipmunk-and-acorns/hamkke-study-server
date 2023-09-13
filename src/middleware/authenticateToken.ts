@@ -40,7 +40,7 @@ const authenticateToken = (request: Request, response: Response, next: NextFunct
       'name' in error &&
       error.name === 'TokenExpiredError'
     ) {
-      response.locals.tokenExpire = true;
+      response.locals.tokenExpire = error;
       return next();
     }
     console.error(error);
@@ -50,7 +50,7 @@ const authenticateToken = (request: Request, response: Response, next: NextFunct
 
 export const requireTokenCheck = (_request: Request, response: Response, next: NextFunction) => {
   if (response.locals.tokenExpire) {
-    return response.status(401).json({ message: '토큰이 만료되었습니다.' });
+    return response.status(401).json(response.locals.tokenExpire);
   }
 
   if (!response.locals.member) {

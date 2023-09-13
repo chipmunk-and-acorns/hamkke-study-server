@@ -1,5 +1,5 @@
 import { pool } from '../db/postgresDB';
-import { ArticlePost, ArticleUpdate } from '../types/article';
+import { ArticlePost, ArticleUpdate, PlusOrMinus } from '../types/article';
 import { ArticleJoinMemberDB } from '../types/database';
 
 export const saveArticle = async <T extends ArticleJoinMemberDB>(article: ArticlePost) => {
@@ -144,7 +144,6 @@ export const updateArticleById = async (articleId: number, updateArticle: Articl
   }
 };
 
-// 게시글 조회수 증가시키는 쿼리
 export const increaseArticleViewCount = async (articleId: number, count: number) => {
   const client = await pool.connect();
 
@@ -153,6 +152,26 @@ export const increaseArticleViewCount = async (articleId: number, count: number)
     const data = [count, articleId];
 
     await client.query(query, data);
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+export const increaseArticleLikeCount = async (
+  articleId: number,
+  increaseOrDecrease: PlusOrMinus,
+) => {
+  const client = await pool.connect();
+
+  try {
+    const query = `UPDATE article SET like_count = like_count ${increaseOrDecrease} 1 WHERE article_id = $1 RETURNING *`;
+    const data = [articleId];
+
+    const { rows } = await client.query(query, data);
+    return rows[0];
   } catch (error) {
     await client.query('ROLLBACK');
     throw error;

@@ -1,25 +1,31 @@
 import { Request, Response } from 'express';
 import { isEmpty } from 'lodash';
 
-import { ArticlePost } from '../types/article';
+import { getClientIp } from '../util/ip';
+import { findData, saveData } from '../util/redis';
+import { ArticlePost, PlusOrMinus } from '../types/article';
 import { ArticleJoinMemberDB, PositionDB, StackDB } from '../types/database';
 import { camelToSnake, snakeToCamel } from '../mapper/changeCase.mapper';
 import { articleDBToArticleResponseDto } from '../mapper/article.mapper';
 import { saveArticleStack } from '../repository/articleStack.repo';
 import { saveArticlePosition } from '../repository/articlePosition.repo';
+import { findStackListByArticleId } from '../repository/stack.repo';
+import { findPositionListByArticleId } from '../repository/position.repo';
+import {
+  deleteLikeByArticleIdAndMemberId,
+  findLikeByArticleIdAndMemberId,
+  saveLike,
+} from '../repository/like.repo';
 import {
   completeArticleById,
   deleteArticleById,
   findArticleById,
   findArticles,
+  increaseArticleLikeCount,
   increaseArticleViewCount,
   saveArticle,
   updateArticleById,
 } from '../repository/article.repo';
-import { findStackListByArticleId } from '../repository/stack.repo';
-import { findPositionListByArticleId } from '../repository/position.repo';
-import { getClientIp } from '../util/ip';
-import { findData, saveData } from '../util/redis';
 
 export const createArticle = async (request: Request, response: Response) => {
   const {
@@ -184,6 +190,38 @@ export const completeArticle = async (request: Request, response: Response) => {
       return response.status(409).json({ message: '이미 모집이 완료된 게시글입니다.' });
     }
     await completeArticleById(parseInt(id));
+    return response.sendStatus(204);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
+  }
+};
+
+export const likeArticle = async (request: Request, response: Response) => {
+  const { id } = request.params;
+  const { member } = response.locals;
+
+  try {
+    const [result] = await findArticleById(parseInt(id));
+
+    if (isEmpty(result)) {
+      return response.status(400).json({ message: '존재하지 않는 게시글 아이디입니다.' });
+    }
+
+    if (Number(result.member_id) === member.memberId) {
+      return response.status(403).json({ message: '게시글 작성자는 좋아요를 누를 수 없습니다.' });
+    }
+
+    const likeCheck = await findLikeByArticleIdAndMemberId(parseInt(id), Number(member.memberId));
+
+    if (isEmpty(likeCheck)) {
+      await saveLike(parseInt(id), Number(member.memberId));
+      await increaseArticleLikeCount(parseInt(id), PlusOrMinus.PLUS);
+      return response.sendStatus(204);
+    }
+
+    await deleteLikeByArticleIdAndMemberId(parseInt(id), Number(member.memberId));
+    await increaseArticleLikeCount(parseInt(id), PlusOrMinus.MINUS);
     return response.sendStatus(204);
   } catch (error) {
     console.error(error);
