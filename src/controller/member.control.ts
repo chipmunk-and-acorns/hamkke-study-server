@@ -100,6 +100,10 @@ export const logout = async (request: Request, response: Response) => {
   const member = response.locals.member;
 
   try {
+    if (isEmpty(member)) {
+      return response.sendStatus(204);
+    }
+
     const result = await redis.deleteData(`refresh:${member.memberId}`);
 
     if (result > 0) {
