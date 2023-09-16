@@ -15,8 +15,9 @@ export interface MemberDB {
   password: string;
   nickname: string;
   member_image: null | string;
+  introduction: string;
   role: Role;
-  active: Status;
+  status: Status;
   is_deleted: boolean;
   created_at: Date;
   modified_at: Date;

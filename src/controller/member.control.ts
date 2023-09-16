@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 import * as redis from '../util/redis';
 import { env } from '../util/env';
 import { compareToPassword, createToken, hashToPassword, verifyToken } from '../util/auth';
-import { findByUsername, saveMember } from '../repository/member.repo';
+import { findById, findByUsername, saveMember } from '../repository/member.repo';
 import { PostMember } from '../types/member';
 import { MemberDB, Role } from '../types/database';
 
@@ -137,6 +137,38 @@ export const ReissueAccessUsingRefresh = async (request: Request, response: Resp
     );
 
     return response.status(201).json({ accessToken });
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
+  }
+};
+
+export const me = async (request: Request, response: Response) => {
+  const member = response.locals.member;
+
+  try {
+    const [findMember] = await findById(parseInt(member.memberId));
+
+    if (isEmpty(findMember)) {
+      return response.status(400).json({ message: '존재하지 않는 회원입니다.' });
+    }
+
+    if (findMember.is_deleted) {
+      return response.status(400).json({ message: '탈퇴한 회원입니다.' });
+    }
+
+    const responseDto = {
+      memberId: findMember.member_id,
+      username: findMember.username,
+      nickname: findMember.nickname,
+      memberImage: findMember.member_image,
+      introduction: findMember.introduction,
+      role: findMember.role,
+      status: findMember.status,
+      createdAt: findMember.created_at,
+    };
+
+    return response.status(200).json(responseDto);
   } catch (error) {
     console.error(error);
     return response.status(500).json({ error });
