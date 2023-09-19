@@ -2,7 +2,7 @@ import * as express from 'express';
 import {
   deleteComment,
   getCommentList,
-  saveComment,
+  addComment,
   updateComment,
 } from '../controller/comment.controller';
 import authenticateToken, { requireTokenCheck } from '../middleware/authenticateToken';
@@ -10,7 +10,7 @@ import authenticateToken, { requireTokenCheck } from '../middleware/authenticate
 const route = express.Router();
 
 route.get('/:articleId', getCommentList);
-route.post('/', authenticateToken, requireTokenCheck, saveComment);
+route.post('/:articleId', authenticateToken, requireTokenCheck, addComment);
 route.put('/:id', authenticateToken, requireTokenCheck, updateComment);
 route.delete('/:id', authenticateToken, requireTokenCheck, deleteComment);
 
