@@ -49,7 +49,9 @@ export const findArticles = async () => {
       a.duration,
       a.closing_date,
       a.view_count, 
-      a.like_count, 
+      a.like_count,
+      a.is_closed,
+      a.is_deleted,
         m.member_id, 
         m.username, 
         m.nickname, 
@@ -99,14 +101,14 @@ export const findArticleById = async (articleId: number) => {
       a.is_deleted, 
       a.created_at, 
       a.modified_at, 
-      m.username, 
-      m.password, 
-      m.nickname, 
-      m.role, 
-      m.status, 
-      m.member_image, 
-      m.introduction, 
-      m.is_deleted as destroy
+        m.username, 
+        m.password, 
+        m.nickname, 
+        m.role, 
+        m.status, 
+        m.member_image, 
+        m.introduction, 
+        m.is_deleted as destroy
       FROM article as a
       LEFT JOIN member as m ON a.member_id = m.member_id 
       WHERE a.article_id = $1`;
