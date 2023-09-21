@@ -2,7 +2,7 @@ type SnakeToCamel<S extends string> = S extends `${infer T}_${infer U}`
   ? `${Lowercase<T>}${Capitalize<SnakeToCamel<U>>}`
   : Lowercase<S>;
 
-type ConvertKeysToCamel<T> = {
+export type ConvertKeysToCamel<T> = {
   [K in keyof T as SnakeToCamel<string & K>]: T[K];
 };
 

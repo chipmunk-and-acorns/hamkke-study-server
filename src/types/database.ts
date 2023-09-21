@@ -63,6 +63,24 @@ export interface ArticleJoinMemberDB extends ArticleDB {
   destroy: boolean;
 }
 
+// Comment
+export interface CommentDB {
+  comment_id: number;
+  article_id: number;
+  member_id: number;
+  parent_comment_id?: number;
+  content: string;
+  created_at: Date;
+  modified_at: Date;
+}
+
+export interface CommentJoinMember extends CommentDB {
+  nickname: string;
+  role: Role;
+  status: Status;
+  member_image: string | null;
+}
+
 // Stack
 export interface StackDB {
   stack_id: number;

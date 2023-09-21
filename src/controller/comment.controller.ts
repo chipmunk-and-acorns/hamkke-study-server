@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import { isEmpty } from 'lodash';
+
 import {
   deleteCommentById,
   findCommentById,
@@ -6,8 +8,12 @@ import {
   saveComment,
   updateCommentById,
 } from '../repository/comment.repo';
-import { snakeToCamel } from '../mapper/changeCase.mapper';
-import { isEmpty } from 'lodash';
+import { ConvertKeysToCamel, snakeToCamel } from '../mapper/changeCase.mapper';
+import { CommentJoinMember } from '../types/database';
+
+interface CommentWithChildren extends CommentJoinMember {
+  children: ConvertKeysToCamel<CommentWithChildren>[];
+}
 
 export const addComment = async (request: Request, response: Response) => {
   const { articleId } = request.params;
@@ -34,9 +40,30 @@ export const getCommentList = async (request: Request, response: Response) => {
   const { articleId } = request.params;
 
   try {
-    const commentList = await findCommentsList(Number(articleId));
+    const result = await findCommentsList(Number(articleId));
+    const commentList = result.map((comment) => {
+      const data: CommentWithChildren = {
+        ...comment,
+        children: [],
+      };
+      return snakeToCamel<CommentWithChildren>(data);
+    });
 
-    return response.status(200).json(commentList);
+    const tree: ConvertKeysToCamel<CommentWithChildren>[] = [];
+    const map: { [key: string]: ConvertKeysToCamel<CommentWithChildren> } = {};
+
+    commentList.forEach((comment) => {
+      map[comment.commentId] = comment;
+    });
+    commentList.forEach((comment) => {
+      if (comment.parentCommentId != null) {
+        map[comment.parentCommentId].children.push(comment);
+      } else {
+        tree.push(comment);
+      }
+    });
+
+    return response.status(200).json(tree);
   } catch (error) {
     console.error(error);
     return response.status(500).json({ error });
