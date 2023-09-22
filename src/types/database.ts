@@ -33,6 +33,12 @@ export enum ProgressMode {
   offline = 'offline',
 }
 
+export enum JoinStatus {
+  apply = 'apply',
+  accept = 'accept',
+  reject = 'reject',
+}
+
 export interface ArticleDB {
   [key: string]: unknown;
   article_id: number;
@@ -94,4 +100,12 @@ export interface PositionDB {
   name: string;
   created_at: Date;
   modified_at: Date;
+}
+
+export interface JoinDB {
+  join_id: number;
+  article_id: number;
+  member_id: number;
+  status: JoinStatus;
+  created_at: Date;
 }

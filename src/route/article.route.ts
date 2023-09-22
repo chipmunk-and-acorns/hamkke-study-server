@@ -6,6 +6,7 @@ import {
   deleteArticle,
   getArticle,
   getArticleList,
+  joinArticle,
   likeArticle,
   updateArticle,
 } from '../controller/article.controller';
@@ -17,6 +18,7 @@ route.post('/', authenticateToken, requireTokenCheck, createArticle);
 route.get('/', getArticleList);
 route.get('/:id', authenticateToken, getArticle);
 route.put('/:id', authenticateToken, requireTokenCheck, updateArticle);
+route.post('/join/:id', authenticateToken, requireTokenCheck, joinArticle);
 route.patch('/complete/:id', authenticateToken, requireTokenCheck, completeArticle);
 route.patch('/like/:id', authenticateToken, requireTokenCheck, likeArticle);
 route.delete('/:id', authenticateToken, requireTokenCheck, deleteArticle);

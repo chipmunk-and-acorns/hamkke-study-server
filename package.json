@@ -8,7 +8,8 @@
     "build": "tsc",
     "dev": "NODE_ENV=development nodemon",
     "create-db": "psql postgres -c \"SELECT 1 FROM pg_database WHERE datname='hamkke';\" -tA  | grep -q 1 || psql postgres -c \"CREATE DATABASE hamkke;\"",
-    "migration": "npm run create-db && psql -d hamkke -f ./src/db/migration/init.sql"
+    "db-init": "npm run create-db && psql -d hamkke -f ./src/db/migration/init.sql",
+    "db-seed": "psql -d hamkke -f ./src/db/seed/seed.sql"
   },
   "repository": {
     "type": "git",
