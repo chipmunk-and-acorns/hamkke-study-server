@@ -8,23 +8,24 @@ import { ArticleJoinMemberDB, PositionDB, StackDB } from '../types/database';
 import { camelToSnake, snakeToCamel } from '../mapper/changeCase.mapper';
 import { articleDBToArticleResponseDto } from '../mapper/article.mapper';
 import { saveArticleStack } from '../repository/articleStack.repo';
-import { saveArticlePosition } from '../repository/articlePosition.repo';
 import { findStackListByArticleId } from '../repository/stack.repo';
+import { saveArticlePosition } from '../repository/articlePosition.repo';
+import { findJoinByArticleIdAndMemberId, savaJoin } from '../repository/join.repo';
 import { findPositionListByArticleId } from '../repository/position.repo';
 import {
-  deleteLikeByArticleIdAndMemberId,
-  findLikeByArticleIdAndMemberId,
   saveLike,
+  findLikeByArticleIdAndMemberId,
+  deleteLikeByArticleIdAndMemberId,
 } from '../repository/like.repo';
 import {
-  completeArticleById,
-  deleteArticleById,
-  findArticleById,
+  saveArticle,
   findArticles,
+  findArticleById,
+  deleteArticleById,
+  updateArticleById,
+  completeArticleById,
   increaseArticleLikeCount,
   increaseArticleViewCount,
-  saveArticle,
-  updateArticleById,
 } from '../repository/article.repo';
 
 export const createArticle = async (request: Request, response: Response) => {
@@ -223,6 +224,38 @@ export const likeArticle = async (request: Request, response: Response) => {
     await deleteLikeByArticleIdAndMemberId(parseInt(id), Number(member.memberId));
     await increaseArticleLikeCount(parseInt(id), PlusOrMinus.MINUS);
     return response.sendStatus(204);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
+  }
+};
+
+export const joinArticle = async (request: Request, response: Response) => {
+  const { id } = request.params;
+  const {
+    member: { memberId },
+  } = response.locals;
+
+  try {
+    const [findArticle] = await findArticleById(parseInt(id));
+
+    if (isEmpty(findArticle)) {
+      return response.status(400).json({ message: '존재하지 않는 게시글입니다.' });
+    } else if (findArticle.is_closed) {
+      return response.status(400).json({ message: '모집이 마감된 게시글입니다.' });
+    } else if (+memberId === +findArticle.member_id) {
+      return response.status(400).json({ message: '자신의 게시글에는 참여할 수 없습니다.' });
+    }
+
+    const isJoin = await findJoinByArticleIdAndMemberId(+id, +memberId);
+
+    if (!isEmpty(isJoin)) {
+      return response.status(400).json({ message: '이미 참여 신청한 게시글입니다.' });
+    }
+
+    const savedJoin = await savaJoin(+id, +memberId);
+
+    return response.status(201).json(savedJoin);
   } catch (error) {
     console.error(error);
     return response.status(500).json({ error });
