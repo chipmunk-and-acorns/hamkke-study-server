@@ -74,9 +74,13 @@ export const createArticle = async (request: Request, response: Response) => {
   }
 };
 
-export const getArticleList = async (_request: Request, response: Response) => {
+export const getArticleList = async (request: Request, response: Response) => {
+  const { page = 1, search } = request.query;
   try {
-    const result = await findArticles();
+    const result = await findArticles({
+      page: Number(page),
+      search: search?.toString(),
+    });
     const articles = result.map((article) => articleDBToArticleResponseDto(article));
 
     return response.status(200).json(articles);
