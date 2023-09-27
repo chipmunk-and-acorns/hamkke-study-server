@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 import { getClientIp } from '../util/ip';
 import { findData, saveData } from '../util/redis';
 import { ArticlePost, PlusOrMinus } from '../types/article';
-import { ArticleJoinMemberDB, PositionDB, StackDB } from '../types/database';
+import { ArticleJoinMemberDB, PositionDB, ProgressMode, StackDB } from '../types/database';
 import { camelToSnake, snakeToCamel } from '../mapper/changeCase.mapper';
 import { articleDBToArticleResponseDto } from '../mapper/article.mapper';
 import { saveArticleStack } from '../repository/articleStack.repo';
@@ -75,10 +75,28 @@ export const createArticle = async (request: Request, response: Response) => {
 };
 
 export const getArticleList = async (request: Request, response: Response) => {
-  const { page = 1, search } = request.query;
+  const { page = 1, stack, position, progress, close, search } = request.query;
+  const stacks = stack
+    ? stack
+        .toString()
+        .split(',')
+        .map((s) => Number(s))
+    : [];
+  const positions = position
+    ? position
+        .toString()
+        .split(',')
+        .map((p) => Number(p))
+    : [];
+  const isClosed = !!close;
+
   try {
     const result = await findArticles({
       page: Number(page),
+      stacks,
+      positions,
+      progressMode: progress?.toString(),
+      isClosed,
       search: search?.toString(),
     });
     const articles = result.map((article) => articleDBToArticleResponseDto(article));
