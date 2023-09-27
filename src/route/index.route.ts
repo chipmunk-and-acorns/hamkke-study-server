@@ -6,6 +6,7 @@ import articleRoute from './article.route';
 import stackRoute from './stack.route';
 import positionRoute from './position.route';
 import commentRoute from './comment.route';
+import joinRoute from './join.route';
 
 const route = express.Router();
 
@@ -15,5 +16,6 @@ route.use('/articles', articleRoute);
 route.use('/comments', commentRoute);
 route.use('/stacks', stackRoute);
 route.use('/positions', positionRoute);
+route.use('/joins', joinRoute);
 
 export default route;
