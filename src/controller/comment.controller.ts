@@ -37,6 +37,7 @@ export const addComment = async (request: Request, response: Response) => {
 };
 
 export const getCommentList = async (request: Request, response: Response) => {
+  const { page } = request.query;
   const { articleId } = request.params;
 
   try {
@@ -63,7 +64,9 @@ export const getCommentList = async (request: Request, response: Response) => {
       }
     });
 
-    return response.status(200).json(tree);
+    const commentForPage = tree.slice((Number(page) - 1) * 10, Number(page) * 10);
+    const lastPage = Math.ceil(tree.length / 10) <= Number(page);
+    return response.status(200).json({ comments: commentForPage, lastPage });
   } catch (error) {
     console.error(error);
     return response.status(500).json({ error });
