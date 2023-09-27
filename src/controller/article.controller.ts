@@ -26,6 +26,7 @@ import {
   completeArticleById,
   increaseArticleLikeCount,
   increaseArticleViewCount,
+  findArticleByMemberId,
 } from '../repository/article.repo';
 
 export const createArticle = async (request: Request, response: Response) => {
@@ -305,6 +306,18 @@ export const deleteArticle = async (request: Request, response: Response) => {
     } else {
       throw new Error('알수 없는 이유로 게시글을 삭제하는데 실패했습니다.');
     }
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
+  }
+};
+
+export const findWriteArticleForMe = async (_request: Request, response: Response) => {
+  const { memberId } = response.locals.member;
+  try {
+    const articles = await findArticleByMemberId(Number(memberId));
+
+    return response.status(200).json(articles);
   } catch (error) {
     console.error(error);
     return response.status(500).json({ error });
