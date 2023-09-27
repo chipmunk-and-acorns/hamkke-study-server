@@ -1,6 +1,15 @@
 import { pool } from '../db/postgresDB';
 import { ArticlePost, ArticleUpdate, PlusOrMinus } from '../types/article';
-import { ArticleJoinMemberDB } from '../types/database';
+import { ArticleJoinMemberDB, ProgressMode } from '../types/database';
+
+interface ArticleQuery {
+  page: number;
+  stacks?: number[];
+  positions?: number[];
+  progressMode?: string;
+  isClosed: boolean;
+  search?: string;
+}
 
 export const saveArticle = async <T extends ArticleJoinMemberDB>(article: ArticlePost) => {
   const client = await pool.connect();
@@ -34,8 +43,20 @@ export const saveArticle = async <T extends ArticleJoinMemberDB>(article: Articl
   }
 };
 
-export const findArticles = async () => {
+export const findArticles = async (query: ArticleQuery) => {
+  const { page, search, stacks, positions, progressMode, isClosed } = query;
   const client = await pool.connect();
+  const stackFilter = stacks?.length
+    ? 'AND (' + stacks.map((s) => `s.stack_id = ${s}`).join(' OR ') + ')'
+    : '';
+  const positionFilter = positions?.length
+    ? 'AND (' + positions.map((p) => `p.position_id = ${p}`).join(' OR ') + ')'
+    : '';
+  const progressFilter = progressMode ? `AND a.progressMode = ${progressMode}` : '';
+  const isClosedFilter = isClosed == null ? '' : `AND a.is_closed = ${isClosed}`;
+  const keyword = search
+    ? `AND (a.title ILIKE '%${search}%' OR a.content ILIKE '%${search}%')`
+    : '';
 
   try {
     const query = `
@@ -67,9 +88,12 @@ export const findArticles = async () => {
     LEFT JOIN stack AS s ON (asck.stack_id = s.stack_id)
     LEFT JOIN article_position AS aps ON (a.article_id = aps.article_id)
     LEFT JOIN position AS p ON (aps.position_id = p.position_id)
-    WHERE NOT a.is_deleted
+    WHERE NOT a.is_deleted ${keyword} ${stackFilter} ${positionFilter} ${progressFilter} ${isClosedFilter}
     GROUP BY 1,m.member_id,m.username,m.nickname,m.role,m.status,m.member_image,m.introduction
-    ORDER BY a.created_at DESC;`;
+    ORDER BY a.created_at DESC
+    LIMIT 10 OFFSET ${(page - 1) * 10};
+    `;
+
     const { rows } = await client.query<ArticleJoinMemberDB>(query);
 
     return rows;
