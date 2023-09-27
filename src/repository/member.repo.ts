@@ -41,3 +41,44 @@ export const findByUsername = async (username: string) => {
 
   return rows;
 };
+
+export const updateMemberById = async (data: MemberDB) => {
+  const { member_id, username, password, nickname, member_image, introduction } = data;
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+    const { rows } = await client.query<MemberDB>(
+      `UPDATE member SET username=$1, password=$2, nickname=$3, member_image=$4, introduction=$5 WHERE member_id=$6 RETURNING *`,
+      [username, password, nickname, member_image, introduction, member_id],
+    );
+    await client.query('COMMIT');
+
+    return rows;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+export const deleteMemberById = async (memberId: number) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+    const { rows } = await client.query<MemberDB>(
+      `UPDATE member SET is_deleted=true WHERE member_id=$1 RETURNING *`,
+      [memberId],
+    );
+    await client.query('COMMIT');
+
+    return rows;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};

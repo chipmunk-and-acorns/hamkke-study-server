@@ -4,6 +4,7 @@ import {
   completeArticle,
   createArticle,
   deleteArticle,
+  findWriteArticleForMe,
   getArticle,
   getArticleList,
   joinArticle,
@@ -16,6 +17,7 @@ const route = express.Router();
 
 route.post('/', authenticateToken, requireTokenCheck, createArticle);
 route.get('/', getArticleList);
+route.get('/me', authenticateToken, requireTokenCheck, findWriteArticleForMe);
 route.get('/:id', authenticateToken, getArticle);
 route.put('/:id', authenticateToken, requireTokenCheck, updateArticle);
 route.post('/join/:id', authenticateToken, requireTokenCheck, joinArticle);

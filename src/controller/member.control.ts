@@ -4,7 +4,13 @@ import { isEmpty } from 'lodash';
 import * as redis from '../util/redis';
 import { env } from '../util/env';
 import { compareToPassword, createToken, hashToPassword, verifyToken } from '../util/auth';
-import { findById, findByUsername, saveMember } from '../repository/member.repo';
+import {
+  deleteMemberById,
+  findById,
+  findByUsername,
+  saveMember,
+  updateMemberById,
+} from '../repository/member.repo';
 import { PostMember } from '../types/member';
 import { MemberDB, Role } from '../types/database';
 
@@ -169,6 +175,64 @@ export const me = async (request: Request, response: Response) => {
     };
 
     return response.status(200).json(responseDto);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
+  }
+};
+
+export const updateMember = async (request: Request, response: Response) => {
+  const { password, nickname, memberImage, introduce } = request.body;
+  const { memberId } = response.locals.member;
+
+  try {
+    const [findMember] = await findById(parseInt(memberId));
+
+    if (isEmpty(findMember)) {
+      return response.status(400).json({ message: '존재하지 않는 회원입니다.' });
+    } else if (findMember.is_deleted) {
+      return response.status(400).json({ message: '탈퇴한 회원입니다.' });
+    }
+
+    findMember.password = password || findMember.password;
+    findMember.nickname = nickname || findMember.nickname;
+    findMember.member_image = memberImage || findMember.member_image;
+    findMember.introduction = introduce || findMember.introduction;
+
+    const [result] = await updateMemberById(findMember);
+    const memberResponseDto = {
+      memberId: result.member_id,
+      username: result.username,
+      nickname: result.nickname,
+      memberImage: result.member_image,
+      introduction: result.introduction,
+      role: result.role,
+      status: result.status,
+      createdAt: result.created_at,
+    };
+
+    return response.status(200).json(memberResponseDto);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error });
+  }
+};
+
+export const deleteMember = async (request: Request, response: Response) => {
+  const { memberId } = response.locals.member;
+
+  try {
+    const [findMember] = await findById(parseInt(memberId));
+
+    if (isEmpty(findMember)) {
+      return response.status(400).json({ message: '존재하지 않는 회원입니다.' });
+    } else if (findMember.is_deleted) {
+      return response.status(400).json({ message: '탈퇴한 회원입니다.' });
+    }
+
+    await deleteMemberById(Number(memberId));
+
+    return response.sendStatus(204);
   } catch (error) {
     console.error(error);
     return response.status(500).json({ error });
