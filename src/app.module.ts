@@ -14,7 +14,7 @@ import {
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: `${process.env['NODE_ENV'] === 'production' ? '.env' : '.env.development.local'}`,
       isGlobal: true,
     }),
     TypeOrmModule.forRoot({
