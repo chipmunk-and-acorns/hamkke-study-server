@@ -12,7 +12,10 @@ import {
   ENV_POSTGRES_PASSWORD_KEY,
   ENV_POSTGRES_PORT_KEY,
   ENV_POSTGRES_USERNAME_KEY,
-} from 'src/const/env-keys.const';
+} from 'src/common/const/env-keys.const';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { UsersModel } from './users/entities/users.entity';
 
 @Module({
   imports: [
@@ -27,7 +30,7 @@ import {
       username: process.env[ENV_POSTGRES_USERNAME_KEY],
       password: process.env[ENV_POSTGRES_PASSWORD_KEY],
       database: process.env[ENV_POSTGRES_DATABASE_KEY],
-      entities: [],
+      entities: [UsersModel],
       synchronize: true,
     }),
     CacheModule.register<RedisClientOptions>({
@@ -35,6 +38,8 @@ import {
       host: 'redis',
       port: 6379,
     }),
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
