@@ -73,4 +73,51 @@ export class AuthService {
 
     return findUser;
   }
+
+  // Token 재발급
+  extractTokenFromHeader(header: string, isBearer: boolean) {
+    const splitToken = header.split(' ');
+    const prefix = isBearer ? 'Bearer' : 'Basic';
+
+    if (splitToken.length !== 2 || splitToken[0] !== prefix) {
+      throw new UnauthorizedException('잘못된 토큰입니다.');
+    }
+
+    const token = splitToken[1];
+
+    return token;
+  }
+
+  decodeBasicToken(base64String: string) {
+    const decoded = Buffer.from(base64String, 'base64').toString('utf-8');
+    const split = decoded.split(':');
+
+    if (split.length !== 2) {
+      throw new UnauthorizedException('잘못된 유형의 토큰입니다.');
+    }
+
+    const [email, password] = split;
+
+    return { email, password };
+  }
+
+  verifyToken(token: string) {
+    return this.jwtService.verify(token, {
+      secret: ENV_JWT_SECRET_KEY,
+    });
+  }
+
+  rotateToken(token: string, isRefreshToken: boolean) {
+    const decoded = this.jwtService.verify(token, {
+      secret: ENV_JWT_SECRET_KEY,
+    });
+
+    if (decoded.type !== 'refresh') {
+      throw new UnauthorizedException(
+        '토큰 재발급은 Refresh Token으로 가능합니다!',
+      );
+    }
+
+    return this.signToken({ ...decoded }, isRefreshToken);
+  }
 }
