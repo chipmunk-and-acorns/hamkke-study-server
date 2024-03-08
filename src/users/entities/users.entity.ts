@@ -1,19 +1,11 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { UserRole } from '../const/roles.const';
+import { BaseModel } from 'src/common/entities/base.entity';
 
 @Entity({
   name: 'users',
 })
-export class UsersModel {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class UsersModel extends BaseModel {
   @Column({
     type: 'varchar',
     length: 50,
@@ -42,14 +34,4 @@ export class UsersModel {
     nullable: false,
   })
   role: UserRole;
-
-  @CreateDateColumn({
-    nullable: false,
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({
-    nullable: false,
-  })
-  updatedAt: Date;
 }
