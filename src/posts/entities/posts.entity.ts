@@ -1,14 +1,12 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { PostType } from '../const/type.const';
 import { BaseModel } from 'src/common/entities/base.entity';
+import { UsersModel } from 'src/users/entities/users.entity';
 
 @Entity({
   name: 'posts',
 })
 export class PostsModel extends BaseModel {
-  @Column()
-  userId: number;
-
   @Column({
     type: 'varchar',
     length: 100,
@@ -54,4 +52,9 @@ export class PostsModel extends BaseModel {
     default: 0,
   })
   viewCount: number;
+
+  @ManyToOne(() => UsersModel, (user) => user.posts, {
+    nullable: false,
+  })
+  user: UsersModel;
 }
