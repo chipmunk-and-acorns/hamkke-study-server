@@ -16,6 +16,8 @@ import {
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UsersModel } from './users/entities/users.entity';
+import { PostsModule } from './posts/posts.module';
+import { PostsModel } from './posts/entities/posts.model';
 
 @Module({
   imports: [
@@ -30,7 +32,7 @@ import { UsersModel } from './users/entities/users.entity';
       username: process.env[ENV_POSTGRES_USERNAME_KEY],
       password: process.env[ENV_POSTGRES_PASSWORD_KEY],
       database: process.env[ENV_POSTGRES_DATABASE_KEY],
-      entities: [UsersModel],
+      entities: [UsersModel, PostsModel],
       synchronize: true,
     }),
     CacheModule.register<RedisClientOptions>({
@@ -40,6 +42,7 @@ import { UsersModel } from './users/entities/users.entity';
     }),
     AuthModule,
     UsersModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
