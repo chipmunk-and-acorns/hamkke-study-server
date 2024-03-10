@@ -102,9 +102,13 @@ export class AuthService {
   }
 
   verifyToken(token: string) {
-    return this.jwtService.verify(token, {
-      secret: ENV_JWT_SECRET_KEY,
-    });
+    try {
+      return this.jwtService.verify(token, {
+        secret: ENV_JWT_SECRET_KEY,
+      });
+    } catch (e) {
+      throw new UnauthorizedException(e.message);
+    }
   }
 
   rotateToken(token: string, isRefreshToken: boolean) {
