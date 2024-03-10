@@ -6,17 +6,21 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostType } from './const/type.const';
+import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
+import { User } from 'src/users/decorator/user.decorator';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
+  @UseGuards(AccessTokenGuard)
   async postCreatePost(
-    @Body('userId') userId: string,
+    @User('id') userId: number,
     @Body('title') title: string,
     @Body('content') content: string,
     @Body('postType') _postType: PostType,
@@ -24,7 +28,7 @@ export class PostsController {
     @Body('deadline') deadline: Date,
   ) {
     return await this.postsService.createPost(
-      +userId,
+      userId,
       title,
       content,
       PostType.STUDY,
@@ -44,7 +48,9 @@ export class PostsController {
   }
 
   @Patch(':id')
+  @UseGuards(AccessTokenGuard)
   async patchPost(
+    @User('id') userId: number,
     @Param('id') id: string,
     @Body('title') title: string,
     @Body('content') content: string,
@@ -53,6 +59,7 @@ export class PostsController {
     @Body('deadline') deadline: Date,
   ) {
     return await this.postsService.updatePost(
+      userId,
       +id,
       title,
       content,
@@ -63,7 +70,8 @@ export class PostsController {
   }
 
   @Delete(':id')
-  async deletePost(@Param('id') id: string) {
-    return await this.postsService.deletePost(+id);
+  @UseGuards(AccessTokenGuard)
+  async deletePost(@User('id') userId: number, @Param('id') id: string) {
+    return await this.postsService.deletePost(userId, +id);
   }
 }

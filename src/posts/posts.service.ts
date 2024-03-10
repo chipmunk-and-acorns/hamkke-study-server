@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostsModel } from './entities/posts.entity';
 import { Repository } from 'typeorm';
@@ -48,6 +52,7 @@ export class PostsService {
   }
 
   async updatePost(
+    userId: number,
     postId: number,
     title?: string,
     content?: string,
@@ -61,6 +66,10 @@ export class PostsService {
       throw new NotFoundException('게시글을 찾을 수 없습니다.');
     }
 
+    if (userId !== post.user.id) {
+      throw new UnauthorizedException('해당 게시글을 수정할 권한이 없습니다.');
+    }
+
     if (title) post.title = title;
     if (content) post.content = content;
     if (postType) post.postType = postType;
@@ -70,11 +79,15 @@ export class PostsService {
     return await this.postsRepository.save(post);
   }
 
-  async deletePost(postId: number) {
+  async deletePost(userId: number, postId: number) {
     const post = await this.postsRepository.findOne({ where: { id: postId } });
 
     if (!post) {
       throw new NotFoundException('해당 포스트를 찾을 수 없습니다.');
+    }
+
+    if (userId !== post.user.id) {
+      throw new UnauthorizedException('해당 게시글을 삭제할 권한이 없습니다.');
     }
 
     return await this.postsRepository.delete({ id: postId });
