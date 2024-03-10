@@ -1,17 +1,4 @@
 services:
-  server:
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./
-    container_name: nestJS
-    ports:
-      - '5000:5000'
-    volumes:
-      - /app/node_modules
-      - ./:/app
-    depends_on:
-      - postgres
-      - redis
   postgres:
     image: postgres:15
     container_name: database
