@@ -38,14 +38,14 @@ export class PostsController {
     return await this.postsService.getPosts();
   }
 
-  @Get(':postId')
-  async getPostById(@Param('postId') postId: string) {
-    return await this.postsService.getPostByPostId(+postId);
+  @Get(':id')
+  async getPostById(@Param('id') id: string) {
+    return await this.postsService.getPostByPostId(+id);
   }
 
-  @Patch(':postId')
+  @Patch(':id')
   async patchPost(
-    @Param('postId') postId: string,
+    @Param('id') id: string,
     @Body('title') title: string,
     @Body('content') content: string,
     @Body('postType') postType: PostType,
@@ -53,7 +53,7 @@ export class PostsController {
     @Body('deadline') deadline: Date,
   ) {
     return await this.postsService.updatePost(
-      +postId,
+      +id,
       title,
       content,
       postType,
@@ -62,8 +62,8 @@ export class PostsController {
     );
   }
 
-  @Delete(':postId')
-  async deletePost(@Param('postId') postId: string) {
-    return await this.postsService.deletePost(+postId);
+  @Delete(':id')
+  async deletePost(@Param('id') id: string) {
+    return await this.postsService.deletePost(+id);
   }
 }

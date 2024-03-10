@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PostsModel } from './entities/posts.model';
+import { PostsModel } from './entities/posts.entity';
 import { Repository } from 'typeorm';
 import { PostType } from './const/type.const';
 
@@ -22,7 +22,7 @@ export class PostsService {
     const newPost = this.postsRepository.create({
       title,
       content,
-      userId,
+      user: { id: userId },
       postType,
       deadline,
       recruitCount,
@@ -31,11 +31,20 @@ export class PostsService {
   }
 
   async getPosts() {
-    return await this.postsRepository.find();
+    return await this.postsRepository.find({ relations: ['user'] });
   }
 
   async getPostByPostId(postId: number) {
-    return await this.postsRepository.findOne({ where: { id: postId } });
+    const post = await this.postsRepository.findOne({
+      where: { id: postId },
+      relations: ['user'],
+    });
+
+    if (!post) {
+      throw new NotFoundException('게시글을 찾을 수 없습니다.');
+    }
+
+    return post;
   }
 
   async updatePost(
@@ -62,6 +71,12 @@ export class PostsService {
   }
 
   async deletePost(postId: number) {
+    const post = await this.postsRepository.findOne({ where: { id: postId } });
+
+    if (!post) {
+      throw new NotFoundException('해당 포스트를 찾을 수 없습니다.');
+    }
+
     return await this.postsRepository.delete({ id: postId });
   }
 }
