@@ -17,7 +17,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UsersModel } from './users/entities/users.entity';
 import { PostsModule } from './posts/posts.module';
-import { PostsModel } from './posts/entities/posts.model';
+import { PostsModel } from './posts/entities/posts.entity';
 
 @Module({
   imports: [
