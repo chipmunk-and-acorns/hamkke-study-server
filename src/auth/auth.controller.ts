@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BasicTokenGuard } from './guard/basic-token.guard';
 import { RefreshTokenGuard } from './guard/bearer-token.guard';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -21,12 +22,8 @@ export class AuthController {
 
   @ApiOperation({ summary: '이메일 회원가입' })
   @Post('register/email')
-  postRegisterEmail(
-    @Body('email') email: string,
-    @Body('password') password: string,
-    @Body('nickname') nickname: string,
-  ) {
-    return this.authService.registerWithEmail({ email, password, nickname });
+  postRegisterEmail(@Body() registerUserDto: RegisterUserDto) {
+    return this.authService.registerWithEmail(registerUserDto);
   }
 
   @ApiOperation({ summary: '엑세스토큰 발급' })
