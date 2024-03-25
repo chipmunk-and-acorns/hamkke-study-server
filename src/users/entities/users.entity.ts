@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { UserRole } from '../const/roles.const';
 import { BaseModel } from 'src/common/entities/base.entity';
 import { PostsModel } from 'src/posts/entities/posts.entity';
+import { IsString, Length, ValidationArguments } from 'class-validator';
 
 @Entity({
   name: 'users',
@@ -19,6 +20,13 @@ export class UsersModel extends BaseModel {
     length: 100,
     nullable: false,
   })
+  @IsString()
+  @Length(8, 20, {
+    message: (args: ValidationArguments) => {
+      console.log(args);
+      return '';
+    },
+  })
   password: string;
 
   @Column({
@@ -26,6 +34,8 @@ export class UsersModel extends BaseModel {
     length: 12,
     unique: true,
   })
+  @IsString()
+  @Length(1, 12, { message: '닉네임은 1자 이상 12자 이하로 입력해주세요.' })
   nickname: string;
 
   @Column({

@@ -1,3 +1,4 @@
+import { CreatePostDto } from './dto/create-post.dto';
 import {
   Injectable,
   NotFoundException,
@@ -6,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostsModel } from './entities/posts.entity';
 import { Repository } from 'typeorm';
-import { PostType } from './const/type.const';
+import { UpdatePostDto } from './dto/update-post-dto';
 
 @Injectable()
 export class PostsService {
@@ -15,21 +16,10 @@ export class PostsService {
     private readonly postsRepository: Repository<PostsModel>,
   ) {}
 
-  async createPost(
-    userId: number,
-    title: string,
-    content: string,
-    postType: PostType,
-    recruitCount: number,
-    deadline: Date,
-  ) {
+  async createPost(userId: number, createPostDto: CreatePostDto) {
     const newPost = this.postsRepository.create({
-      title,
-      content,
+      ...createPostDto,
       user: { id: userId },
-      postType,
-      deadline,
-      recruitCount,
     });
     return await this.postsRepository.save(newPost);
   }
@@ -54,13 +44,12 @@ export class PostsService {
   async updatePost(
     userId: number,
     postId: number,
-    title?: string,
-    content?: string,
-    postType?: PostType,
-    recruitCount?: number,
-    deadline?: Date,
+    updatePostDto: UpdatePostDto,
   ) {
-    const post = await this.postsRepository.findOne({ where: { id: postId } });
+    const post = await this.postsRepository.findOne({
+      where: { id: postId },
+      relations: ['user'],
+    });
 
     if (!post) {
       throw new NotFoundException('게시글을 찾을 수 없습니다.');
@@ -69,6 +58,8 @@ export class PostsService {
     if (userId !== post.user.id) {
       throw new UnauthorizedException('해당 게시글을 수정할 권한이 없습니다.');
     }
+
+    const { title, content, postType, recruitCount, deadline } = updatePostDto;
 
     if (title) post.title = title;
     if (content) post.content = content;

@@ -7,6 +7,7 @@ import {
 } from './../common/const/env-keys.const';
 import { UsersModel } from './../users/entities/users.entity';
 import { UsersService } from 'src/users/users.service';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,15 +16,13 @@ export class AuthService {
     private readonly usersService: UsersService,
   ) {}
 
-  async registerWithEmail(
-    user: Pick<UsersModel, 'email' | 'password' | 'nickname'>,
-  ) {
+  async registerWithEmail(registerUserDto: RegisterUserDto) {
     const hash = await bcrypt.hash(
-      user.password,
+      registerUserDto.password,
       parseInt(BCRYPT_HASH_ROUNDS_KEY),
     );
     const newUser = await this.usersService.createUser({
-      ...user,
+      ...registerUserDto,
       password: hash,
     });
 
