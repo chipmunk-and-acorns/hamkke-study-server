@@ -1,8 +1,9 @@
 import { Column, Entity, OneToMany } from 'typeorm';
+import { IsEmail, IsString, Length } from 'class-validator';
+import { Exclude } from 'class-transformer';
 import { UserRole } from '../const/roles.const';
 import { BaseModel } from 'src/common/entities/base.entity';
 import { PostsModel } from 'src/posts/entities/posts.entity';
-import { IsString, Length, ValidationArguments } from 'class-validator';
 
 @Entity({
   name: 'users',
@@ -13,6 +14,7 @@ export class UsersModel extends BaseModel {
     length: 50,
     unique: true,
   })
+  @IsEmail(null, { message: '이메일 형식이 아닙니다.' })
   email: string;
 
   @Column({
@@ -22,11 +24,9 @@ export class UsersModel extends BaseModel {
   })
   @IsString()
   @Length(8, 20, {
-    message: (args: ValidationArguments) => {
-      console.log(args);
-      return '';
-    },
+    message: '비밀번호는 8자 이상 20자 이하로 입력해주세요.',
   })
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @Column({

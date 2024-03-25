@@ -1,6 +1,6 @@
 import type { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
-import { Module } from '@nestjs/common';
+import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -18,6 +18,7 @@ import { UsersModule } from './users/users.module';
 import { UsersModel } from './users/entities/users.entity';
 import { PostsModule } from './posts/posts.module';
 import { PostsModel } from './posts/entities/posts.entity';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -45,6 +46,12 @@ import { PostsModel } from './posts/entities/posts.entity';
     PostsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+  ],
 })
 export class AppModule {}
