@@ -1,3 +1,6 @@
+export const ENV_PROTOCOL = 'http';
+export const ENV_HOST = 'localhost:5000';
+
 // database
 export const ENV_POSTGRES_HOST_KEY = 'POSTGRES_HOST';
 export const ENV_POSTGRES_PORT_KEY = 'POSTGRES_PORT';
