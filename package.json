@@ -12,6 +12,7 @@
     "start:dev": "nest start --watch",
     "docker": "docker-compose -f docker-compose.dev.yml up",
     "docker:build": "rm -rf postgres-data && docker-compose -f docker-compose.dev.yml up --build",
+    "docker:down": "docker-compose -f docker-compose.dev.yml down",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
