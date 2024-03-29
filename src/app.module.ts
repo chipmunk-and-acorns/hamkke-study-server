@@ -19,6 +19,7 @@ import { UsersModel } from './users/entities/users.entity';
 import { PostsModule } from './posts/posts.module';
 import { PostsModel } from './posts/entities/posts.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       host: 'redis',
       port: 6379,
     }),
+    CommonModule,
     AuthModule,
     UsersModule,
     PostsModule,

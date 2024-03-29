@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -15,6 +16,7 @@ import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post-dto';
+import { PaginatePostDto } from './dto/paginate-post.dto';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -31,10 +33,18 @@ export class PostsController {
     return await this.postsService.createPost(userId, createPostDto);
   }
 
+  @Post('random')
+  @UseGuards(AccessTokenGuard)
+  async postPostsRandom(@User('id') userId: number) {
+    await this.postsService.generatePosts(userId);
+
+    return true;
+  }
+
   @ApiOperation({ summary: '게시글 리스트 조회' })
   @Get()
-  async getPosts() {
-    return await this.postsService.getPosts();
+  async getPosts(@Query() paginatePostDto: PaginatePostDto) {
+    return await this.postsService.paginatePosts(paginatePostDto);
   }
 
   @ApiOperation({ summary: '게시글 상세 조회' })

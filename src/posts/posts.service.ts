@@ -1,19 +1,23 @@
-import { CreatePostDto } from './dto/create-post.dto';
 import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PostsModel } from './entities/posts.entity';
 import { Repository } from 'typeorm';
+import { PostsModel } from './entities/posts.entity';
+import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post-dto';
+import { PaginatePostDto } from './dto/paginate-post.dto';
+import { CommonService } from 'src/common/common.service';
+import { PostType } from './const/type.const';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(PostsModel)
     private readonly postsRepository: Repository<PostsModel>,
+    private readonly commonService: CommonService,
   ) {}
 
   async createPost(userId: number, createPostDto: CreatePostDto) {
@@ -26,6 +30,30 @@ export class PostsService {
 
   async getPosts() {
     return await this.postsRepository.find({ relations: ['user'] });
+  }
+
+  async paginatePosts(dto: PaginatePostDto) {
+    return await this.commonService.paginate(
+      dto,
+      this.postsRepository,
+      { relations: ['user'] },
+      'posts',
+    );
+  }
+
+  async generatePosts(userId: number) {
+    for (let i = 0; i < 100; i++) {
+      const post = this.postsRepository.create({
+        title: `임의로 생선된 포스트 ${i}`,
+        content: `임의로 생성된 포스트 내용 ${i}`,
+        recruitCount: 10,
+        postType: PostType.STUDY,
+        user: { id: userId },
+        deadline: new Date(),
+      });
+
+      await this.postsRepository.save(post);
+    }
   }
 
   async getPostByPostId(postId: number) {
