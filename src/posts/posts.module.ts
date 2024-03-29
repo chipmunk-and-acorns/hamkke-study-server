@@ -1,3 +1,4 @@
+import { CommonModule } from './../common/common.module';
 import { Module } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
@@ -7,7 +8,12 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PostsModel]), AuthModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([PostsModel]),
+    CommonModule,
+    AuthModule,
+    UsersModule,
+  ],
   controllers: [PostsController],
   providers: [PostsService],
 })

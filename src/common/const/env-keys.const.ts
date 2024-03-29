@@ -1,5 +1,5 @@
-export const ENV_PROTOCOL = 'http';
-export const ENV_HOST = 'localhost:5000';
+export const ENV_PROTOCOL = 'PROTOCOL';
+export const ENV_HOST = 'HOST';
 
 // database
 export const ENV_POSTGRES_HOST_KEY = 'POSTGRES_HOST';
@@ -10,4 +10,4 @@ export const ENV_POSTGRES_DATABASE_KEY = 'POSTGRES_DATABASE';
 
 // auth
 export const ENV_JWT_SECRET_KEY = 'ACCESS_SECRET';
-export const BCRYPT_HASH_ROUNDS_KEY = 'BCRYPT_HASH_ROUNDS';
+export const ENV_BCRYPT_HASH_ROUNDS_KEY = 'BCRYPT_HASH_ROUNDS';

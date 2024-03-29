@@ -2,24 +2,26 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import {
-  BCRYPT_HASH_ROUNDS_KEY,
+  ENV_BCRYPT_HASH_ROUNDS_KEY,
   ENV_JWT_SECRET_KEY,
 } from './../common/const/env-keys.const';
 import { UsersModel } from './../users/entities/users.entity';
 import { UsersService } from 'src/users/users.service';
 import { RegisterUserDto } from './dto/register-user.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
   ) {}
 
   async registerWithEmail(registerUserDto: RegisterUserDto) {
     const hash = await bcrypt.hash(
       registerUserDto.password,
-      parseInt(BCRYPT_HASH_ROUNDS_KEY),
+      this.configService.get<number>(ENV_BCRYPT_HASH_ROUNDS_KEY),
     );
     const newUser = await this.usersService.createUser({
       ...registerUserDto,
@@ -50,7 +52,7 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload, {
-      secret: ENV_JWT_SECRET_KEY,
+      secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
       expiresIn: isRefreshToken ? 3600 : 600,
     });
   }
@@ -103,7 +105,7 @@ export class AuthService {
   verifyToken(token: string) {
     try {
       return this.jwtService.verify(token, {
-        secret: ENV_JWT_SECRET_KEY,
+        secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
       });
     } catch (e) {
       throw new UnauthorizedException(e.message);
@@ -112,7 +114,7 @@ export class AuthService {
 
   rotateToken(token: string, isRefreshToken: boolean) {
     const decoded = this.jwtService.verify(token, {
-      secret: ENV_JWT_SECRET_KEY,
+      secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
     });
 
     if (decoded.type !== 'refresh') {

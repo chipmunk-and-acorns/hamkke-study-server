@@ -4,19 +4,20 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, LessThan, MoreThan, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { PostsModel } from './entities/posts.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post-dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
+import { CommonService } from 'src/common/common.service';
 import { PostType } from './const/type.const';
-import { ENV_HOST, ENV_PROTOCOL } from 'src/common/const/env-keys.const';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(PostsModel)
     private readonly postsRepository: Repository<PostsModel>,
+    private readonly commonService: CommonService,
   ) {}
 
   async createPost(userId: number, createPostDto: CreatePostDto) {
@@ -32,59 +33,12 @@ export class PostsService {
   }
 
   async paginatePosts(dto: PaginatePostDto) {
-    const where: FindOptionsWhere<PostsModel> = {};
-
-    if (dto.where__id_less_than) {
-      where['id'] = LessThan(dto.where__id_less_than);
-    } else if (dto.where__id_more_than) {
-      where['id'] = MoreThan(dto.where__id_more_than);
-    }
-
-    const posts = await this.postsRepository.find({
-      where,
-      order: {
-        createdAt: dto.order__createdAt,
-      },
-      take: dto.take,
-      relations: ['user'],
-    });
-
-    const lastItem =
-      posts.length > 0 && posts.length === dto.take
-        ? posts[posts.length - 1]
-        : null;
-    const nextUrl =
-      lastItem &&
-      new URL(`${process.env[ENV_PROTOCOL]}://${process.env[ENV_HOST]}/posts`);
-
-    if (nextUrl) {
-      for (const key of Object.keys(dto)) {
-        if (dto[key]) {
-          if (key !== 'where__id_more_than' && key !== 'where__id_less_ehan') {
-            nextUrl.searchParams.append(key, dto[key]);
-          }
-        }
-      }
-
-      let key = null;
-
-      if (dto.order__createdAt === 'ASC') {
-        key = 'where__id_more_than';
-      } else {
-        key = 'where__id_less_than';
-      }
-
-      nextUrl.searchParams.append(key, lastItem.id.toString());
-    }
-
-    return {
-      data: posts,
-      cursor: {
-        after: lastItem?.id ?? null,
-      },
-      count: posts.length,
-      next: nextUrl?.toString() ?? null,
-    };
+    return await this.commonService.paginate(
+      dto,
+      this.postsRepository,
+      { relations: ['user'] },
+      'posts',
+    );
   }
 
   async generatePosts(userId: number) {
