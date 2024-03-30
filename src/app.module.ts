@@ -20,6 +20,8 @@ import { PostsModule } from './posts/posts.module';
 import { PostsModel } from './posts/entities/posts.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CommonModule } from './common/common.module';
+import { QuestionsModule } from './questions/questions.module';
+import { QuestionsModel } from './questions/entities/question.entity';
 
 @Module({
   imports: [
@@ -34,7 +36,7 @@ import { CommonModule } from './common/common.module';
       username: process.env[ENV_POSTGRES_USERNAME_KEY],
       password: process.env[ENV_POSTGRES_PASSWORD_KEY],
       database: process.env[ENV_POSTGRES_DATABASE_KEY],
-      entities: [UsersModel, PostsModel],
+      entities: [UsersModel, PostsModel, QuestionsModel],
       synchronize: true,
     }),
     CacheModule.register<RedisClientOptions>({
@@ -46,6 +48,7 @@ import { CommonModule } from './common/common.module';
     AuthModule,
     UsersModule,
     PostsModule,
+    QuestionsModule,
   ],
   controllers: [AppController],
   providers: [

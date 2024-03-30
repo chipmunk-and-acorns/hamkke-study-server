@@ -11,6 +11,7 @@ import { UpdatePostDto } from './dto/update-post-dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
 import { CommonService } from 'src/common/common.service';
 import { PostType } from './const/type.const';
+import { QuestionsService } from 'src/questions/questions.service';
 
 @Injectable()
 export class PostsService {
@@ -18,18 +19,36 @@ export class PostsService {
     @InjectRepository(PostsModel)
     private readonly postsRepository: Repository<PostsModel>,
     private readonly commonService: CommonService,
+    private readonly questionsService: QuestionsService,
   ) {}
 
-  async createPost(userId: number, createPostDto: CreatePostDto) {
+  async createPost(
+    userId: number,
+    createPostDto: CreatePostDto,
+    questions: string[],
+  ) {
     const newPost = this.postsRepository.create({
       ...createPostDto,
       user: { id: userId },
     });
-    return await this.postsRepository.save(newPost);
+
+    const createPost = await this.postsRepository.save(newPost);
+    const postId = createPost.id;
+
+    const createQuestions = await Promise.all(
+      questions.map(
+        async (question) =>
+          await this.questionsService.generateQuestions(postId, question),
+      ),
+    );
+
+    return { ...createPost, questions: createQuestions ?? [] };
   }
 
   async getPosts() {
-    return await this.postsRepository.find({ relations: ['user'] });
+    return await this.postsRepository.find({
+      relations: ['user'],
+    });
   }
 
   async paginatePosts(dto: PaginatePostDto) {
@@ -59,7 +78,7 @@ export class PostsService {
   async getPostByPostId(postId: number) {
     const post = await this.postsRepository.findOne({
       where: { id: postId },
-      relations: ['user'],
+      relations: ['user', 'questions'],
     });
 
     if (!post) {
