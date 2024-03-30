@@ -1,9 +1,10 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
-import { PostType } from '../const/type.const';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { JoinType, PostType } from '../const/type.const';
 import { BaseModel } from 'src/common/entities/base.entity';
 import { UsersModel } from 'src/users/entities/users.entity';
 import { IsDate, IsEnum, IsNumber, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { QuestionsModel } from 'src/questions/entities/question.entity';
 
 @Entity({
   name: 'posts',
@@ -66,8 +67,22 @@ export class PostsModel extends BaseModel {
   })
   viewCount: number;
 
+  @Column({
+    type: 'enum',
+    enum: JoinType,
+    nullable: false,
+    default: JoinType.INSTANT,
+  })
+  joinType: JoinType;
+
   @ManyToOne(() => UsersModel, (user) => user.posts, {
     nullable: false,
   })
   user: UsersModel;
+
+  @OneToMany(() => QuestionsModel, (question) => question.post, {
+    nullable: true,
+    cascade: true,
+  })
+  questions: QuestionsModel[];
 }
