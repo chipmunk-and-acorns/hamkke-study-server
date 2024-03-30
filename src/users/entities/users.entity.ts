@@ -14,7 +14,7 @@ export class UsersModel extends BaseModel {
     length: 50,
     unique: true,
   })
-  @IsEmail(null, { message: '이메일 형식이 아닙니다.' })
+  @IsEmail({}, { message: '이메일 형식이 아닙니다.' })
   email: string;
 
   @Column({
