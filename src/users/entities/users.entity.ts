@@ -4,6 +4,7 @@ import { Exclude } from 'class-transformer';
 import { UserRole } from '../const/roles.const';
 import { BaseModel } from 'src/common/entities/base.entity';
 import { PostsModel } from 'src/posts/entities/posts.entity';
+import { AnswersModel } from 'src/answers/entities/answers.entity';
 
 @Entity({
   name: 'users',
@@ -48,4 +49,7 @@ export class UsersModel extends BaseModel {
 
   @OneToMany(() => PostsModel, (post) => post.user)
   posts: PostsModel[];
+
+  @OneToMany(() => AnswersModel, (answer) => answer.user)
+  answers: AnswersModel[];
 }

@@ -1,5 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { PostsModel } from 'src/posts/entities/posts.entity';
+import { AnswersModel } from 'src/answers/entities/answers.entity';
 
 @Entity({ name: 'questions' })
 export class QuestionsModel {
@@ -14,4 +21,7 @@ export class QuestionsModel {
 
   @ManyToOne(() => PostsModel, (post) => post.questions, { nullable: false })
   post: PostsModel;
+
+  @OneToMany(() => AnswersModel, (answer) => answer.question)
+  answers: AnswersModel[];
 }
