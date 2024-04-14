@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { BasePaginationDto } from './entities/base-pagination.dto';
+import { BasePaginationDto } from './dto/base-pagination.dto';
 import {
   FindManyOptions,
   FindOptionsOrder,

@@ -4,7 +4,8 @@ import { BaseModel } from 'src/common/entities/base.entity';
 import { UsersModel } from 'src/users/entities/users.entity';
 import { IsDate, IsEnum, IsNumber, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { QuestionsModel } from 'src/questions/entities/question.entity';
+import { QuestionsModel } from 'src/questions/entities/questions.entity';
+import { ParticipationsModel } from 'src/participations/entities/participations.entity';
 
 @Entity({
   name: 'posts',
@@ -75,14 +76,16 @@ export class PostsModel extends BaseModel {
   })
   joinType: JoinType;
 
+  @OneToMany(() => QuestionsModel, (question) => question.post, {
+    cascade: ['remove'],
+  })
+  questions?: QuestionsModel[];
+
+  @OneToMany(() => ParticipationsModel, (participation) => participation.post)
+  participations: ParticipationsModel[];
+
   @ManyToOne(() => UsersModel, (user) => user.posts, {
     nullable: false,
   })
   user: UsersModel;
-
-  @OneToMany(() => QuestionsModel, (question) => question.post, {
-    nullable: true,
-    cascade: true,
-  })
-  questions: QuestionsModel[];
 }

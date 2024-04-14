@@ -28,11 +28,10 @@ export class PostsController {
   @UseGuards(AccessTokenGuard)
   async postCreatePost(
     @User('id') userId: number,
-    @Body('questions') questions: string,
+    @Body('questions') questions: string[],
     @Body() createPostDto: CreatePostDto,
   ) {
-    const split = questions?.split(',') || [];
-    return await this.postsService.createPost(userId, createPostDto, split);
+    return await this.postsService.createPost(userId, createPostDto, questions);
   }
 
   @Post('random')

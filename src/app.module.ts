@@ -21,7 +21,11 @@ import { PostsModel } from './posts/entities/posts.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CommonModule } from './common/common.module';
 import { QuestionsModule } from './questions/questions.module';
-import { QuestionsModel } from './questions/entities/question.entity';
+import { QuestionsModel } from './questions/entities/questions.entity';
+import { ParticipationsModule } from './participations/participations.module';
+import { ParticipationsModel } from './participations/entities/participations.entity';
+import { AnswersModule } from './answers/answers.module';
+import { AnswersModel } from './answers/entities/answers.entity';
 
 @Module({
   imports: [
@@ -36,7 +40,13 @@ import { QuestionsModel } from './questions/entities/question.entity';
       username: process.env[ENV_POSTGRES_USERNAME_KEY],
       password: process.env[ENV_POSTGRES_PASSWORD_KEY],
       database: process.env[ENV_POSTGRES_DATABASE_KEY],
-      entities: [UsersModel, PostsModel, QuestionsModel],
+      entities: [
+        UsersModel,
+        PostsModel,
+        ParticipationsModel,
+        QuestionsModel,
+        AnswersModel,
+      ],
       synchronize: true,
     }),
     CacheModule.register<RedisClientOptions>({
@@ -49,6 +59,8 @@ import { QuestionsModel } from './questions/entities/question.entity';
     UsersModule,
     PostsModule,
     QuestionsModule,
+    ParticipationsModule,
+    AnswersModule,
   ],
   controllers: [AppController],
   providers: [

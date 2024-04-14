@@ -34,13 +34,16 @@ export class PostsService {
 
     const createPost = await this.postsRepository.save(newPost);
     const postId = createPost.id;
+    let createQuestions;
 
-    const createQuestions = await Promise.all(
-      questions.map(
-        async (question) =>
-          await this.questionsService.generateQuestions(postId, question),
-      ),
-    );
+    if (questions) {
+      createQuestions = await Promise.all(
+        questions.map(
+          async (question) =>
+            await this.questionsService.generateQuestions(postId, question),
+        ),
+      );
+    }
 
     return { ...createPost, questions: createQuestions ?? [] };
   }
@@ -78,7 +81,7 @@ export class PostsService {
   async getPostByPostId(postId: number) {
     const post = await this.postsRepository.findOne({
       where: { id: postId },
-      relations: ['user', 'questions'],
+      relations: ['user', 'questions', 'participations'],
     });
 
     if (!post) {
@@ -118,7 +121,10 @@ export class PostsService {
   }
 
   async deletePost(userId: number, postId: number) {
-    const post = await this.postsRepository.findOne({ where: { id: postId } });
+    const post = await this.postsRepository.findOne({
+      where: { id: postId },
+      relations: ['user'],
+    });
 
     if (!post) {
       throw new NotFoundException('해당 포스트를 찾을 수 없습니다.');
@@ -128,6 +134,6 @@ export class PostsService {
       throw new UnauthorizedException('해당 게시글을 삭제할 권한이 없습니다.');
     }
 
-    return await this.postsRepository.delete({ id: postId });
+    return await this.postsRepository.delete(postId);
   }
 }
