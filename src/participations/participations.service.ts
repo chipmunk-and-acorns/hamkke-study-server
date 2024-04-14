@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ParticipationsModel } from './\bentities/participations.entity';
+import { ParticipationsModel } from './entities/participations.entity';
 import { Repository } from 'typeorm';
 import { CreateAnswerDto } from 'src/answers/dto/create-answer.dto';
 import { AnswersService } from 'src/answers/answers.service';
@@ -16,9 +16,13 @@ export class ParticipationsService {
 
   async instantJoin(userId: number, postId: number) {
     const participation = this.participationsRepository.create({
-      userId,
-      postId,
       status: ParticipationsStatus.ACCEPT,
+      user: {
+        id: userId,
+      },
+      post: {
+        id: postId,
+      },
     });
 
     return await this.participationsRepository.save(participation);
@@ -30,9 +34,13 @@ export class ParticipationsService {
     answers: CreateAnswerDto[],
   ) {
     const participation = this.participationsRepository.create({
-      userId,
-      postId,
       status: ParticipationsStatus.APPLY,
+      user: {
+        id: userId,
+      },
+      post: {
+        id: postId,
+      },
     });
     const newJoin = await this.participationsRepository.save(participation);
 

@@ -34,13 +34,16 @@ export class PostsService {
 
     const createPost = await this.postsRepository.save(newPost);
     const postId = createPost.id;
+    let createQuestions;
 
-    const createQuestions = await Promise.all(
-      questions.map(
-        async (question) =>
-          await this.questionsService.generateQuestions(postId, question),
-      ),
-    );
+    if (questions) {
+      createQuestions = await Promise.all(
+        questions.map(
+          async (question) =>
+            await this.questionsService.generateQuestions(postId, question),
+        ),
+      );
+    }
 
     return { ...createPost, questions: createQuestions ?? [] };
   }

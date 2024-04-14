@@ -23,7 +23,7 @@ import { CommonModule } from './common/common.module';
 import { QuestionsModule } from './questions/questions.module';
 import { QuestionsModel } from './questions/entities/questions.entity';
 import { ParticipationsModule } from './participations/participations.module';
-import { ParticipationsModel } from './participations/\bentities/participations.entity';
+import { ParticipationsModel } from './participations/entities/participations.entity';
 import { AnswersModule } from './answers/answers.module';
 import { AnswersModel } from './answers/entities/answers.entity';
 

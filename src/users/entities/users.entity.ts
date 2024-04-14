@@ -5,6 +5,7 @@ import { UserRole } from '../const/roles.const';
 import { BaseModel } from 'src/common/entities/base.entity';
 import { PostsModel } from 'src/posts/entities/posts.entity';
 import { AnswersModel } from 'src/answers/entities/answers.entity';
+import { ParticipationsModel } from 'src/participations/entities/participations.entity';
 
 @Entity({
   name: 'users',
@@ -52,4 +53,7 @@ export class UsersModel extends BaseModel {
 
   @OneToMany(() => AnswersModel, (answer) => answer.user)
   answers: AnswersModel[];
+
+  @OneToMany(() => ParticipationsModel, (participation) => participation.user)
+  participations: ParticipationsModel[];
 }
