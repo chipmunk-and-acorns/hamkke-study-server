@@ -75,14 +75,13 @@ export class PostsModel extends BaseModel {
   })
   joinType: JoinType;
 
+  @OneToMany(() => QuestionsModel, (question) => question.post, {
+    cascade: ['remove'],
+  })
+  questions?: QuestionsModel[];
+
   @ManyToOne(() => UsersModel, (user) => user.posts, {
     nullable: false,
   })
   user: UsersModel;
-
-  @OneToMany(() => QuestionsModel, (question) => question.post, {
-    nullable: true,
-    cascade: true,
-  })
-  questions: QuestionsModel[];
 }

@@ -19,9 +19,13 @@ export class QuestionsModel {
   })
   question: string;
 
-  @ManyToOne(() => PostsModel, (post) => post.questions, { nullable: false })
+  @ManyToOne(() => PostsModel, (post) => post.questions, {
+    onDelete: 'CASCADE',
+  })
   post: PostsModel;
 
-  @OneToMany(() => AnswersModel, (answer) => answer.question)
+  @OneToMany(() => AnswersModel, (answer) => answer.question, {
+    cascade: ['remove'],
+  })
   answers: AnswersModel[];
 }

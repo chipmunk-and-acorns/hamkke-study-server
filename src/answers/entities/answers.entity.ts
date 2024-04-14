@@ -5,7 +5,9 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'answers' })
 export class AnswersModel extends BaseModel {
-  @ManyToOne(() => QuestionsModel, (question) => question.answers)
+  @ManyToOne(() => QuestionsModel, (question) => question.answers, {
+    onDelete: 'CASCADE',
+  })
   question: QuestionsModel;
 
   @ManyToOne(() => UsersModel, (user) => user.answers)
