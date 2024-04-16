@@ -74,6 +74,7 @@ export class PostsModel extends BaseModel {
     nullable: false,
     default: JoinType.INSTANT,
   })
+  @IsEnum(JoinType)
   joinType: JoinType;
 
   @OneToMany(() => QuestionsModel, (question) => question.post, {
