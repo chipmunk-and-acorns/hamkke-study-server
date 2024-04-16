@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -118,6 +119,31 @@ export class PostsService {
     if (deadline) post.deadline = deadline;
 
     return await this.postsRepository.save(post);
+  }
+
+  async completePost(userId: number, postId: number) {
+    const post = await this.postsRepository.findOne({
+      where: { id: postId },
+      relations: ['user'],
+    });
+
+    if (!post) {
+      throw new NotFoundException('게시글을 찾을 수 없습니다.');
+    }
+
+    if (userId !== post.user.id) {
+      throw new UnauthorizedException('해당 게시글을 수정할 권한이 없습니다.');
+    }
+
+    if (!post.isRecruiting) {
+      throw new BadRequestException('이미 모집완료 상태입니다.');
+    }
+
+    post.isRecruiting = false;
+
+    await this.postsRepository.save(post);
+
+    return true;
   }
 
   async deletePost(userId: number, postId: number) {
