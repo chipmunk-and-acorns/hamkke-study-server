@@ -2,10 +2,10 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { IsEmail, IsString, Length } from 'class-validator';
 import { Exclude } from 'class-transformer';
 import { UserRole } from '../const/roles.const';
-import { BaseModel } from 'src/common/entities/base.entity';
-import { PostsModel } from 'src/posts/entities/posts.entity';
-import { AnswersModel } from 'src/answers/entities/answers.entity';
-import { ParticipationsModel } from 'src/participations/entities/participations.entity';
+import { BaseModel } from '../../common/entities/base.entity';
+import { PostsModel } from '../../posts/entities/posts.entity';
+import { AnswersModel } from '../../answers/entities/answers.entity';
+import { ParticipationsModel } from '../../participations/entities/participations.entity';
 
 @Entity({
   name: 'users',

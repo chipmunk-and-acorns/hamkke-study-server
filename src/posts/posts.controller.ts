@@ -65,6 +65,15 @@ export class PostsController {
     return await this.postsService.updatePost(userId, id, updatePostDto);
   }
 
+  @Patch('complete/:id')
+  @UseGuards(AccessTokenGuard)
+  async patchCompletePost(
+    @User('id') userId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return await this.postsService.completePost(userId, id);
+  }
+
   @ApiOperation({ summary: '게시글 삭제' })
   @Delete(':id')
   @UseGuards(AccessTokenGuard)

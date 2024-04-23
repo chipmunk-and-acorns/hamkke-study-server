@@ -1,31 +1,25 @@
 import type { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
+import * as dotenv from 'dotenv';
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import {
-  ENV_POSTGRES_DATABASE_KEY,
-  ENV_POSTGRES_HOST_KEY,
-  ENV_POSTGRES_PASSWORD_KEY,
-  ENV_POSTGRES_PORT_KEY,
-  ENV_POSTGRES_USERNAME_KEY,
-} from 'src/common/const/env-keys.const';
+
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { UsersModel } from './users/entities/users.entity';
 import { PostsModule } from './posts/posts.module';
-import { PostsModel } from './posts/entities/posts.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CommonModule } from './common/common.module';
 import { QuestionsModule } from './questions/questions.module';
-import { QuestionsModel } from './questions/entities/questions.entity';
 import { ParticipationsModule } from './participations/participations.module';
-import { ParticipationsModel } from './participations/entities/participations.entity';
 import { AnswersModule } from './answers/answers.module';
-import { AnswersModel } from './answers/entities/answers.entity';
+import { StacksModule } from './stacks/stacks.module';
+import { PositionsModule } from './positions/positions.module';
+
+dotenv.config();
 
 @Module({
   imports: [
@@ -35,32 +29,32 @@ import { AnswersModel } from './answers/entities/answers.entity';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env[ENV_POSTGRES_HOST_KEY],
-      port: parseInt(process.env[ENV_POSTGRES_PORT_KEY]),
-      username: process.env[ENV_POSTGRES_USERNAME_KEY],
-      password: process.env[ENV_POSTGRES_PASSWORD_KEY],
-      database: process.env[ENV_POSTGRES_DATABASE_KEY],
-      entities: [
-        UsersModel,
-        PostsModel,
-        ParticipationsModel,
-        QuestionsModel,
-        AnswersModel,
-      ],
+      host: process.env.POSTGRES_HOST,
+      port: parseInt(process.env.POSTGRES_PORT),
+      username: process.env.POSTGRES_USERNAME,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DATABASE,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      logging: true,
       synchronize: true,
+      migrationsRun: false,
+      migrations: [__dirname + '/migrations/data/**/*{.ts,.js}'],
+      migrationsTableName: 'src/migrations/log',
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
       host: 'redis',
       port: 6379,
     }),
-    CommonModule,
+    AnswersModule,
     AuthModule,
-    UsersModule,
+    CommonModule,
+    ParticipationsModule,
+    PositionsModule,
     PostsModule,
     QuestionsModule,
-    ParticipationsModule,
-    AnswersModule,
+    StacksModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [

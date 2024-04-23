@@ -5,6 +5,7 @@ export class CreatePostDto extends PickType(PostsModel, [
   'title',
   'content',
   'postType',
+  'joinType',
   'recruitCount',
   'deadline',
 ]) {}

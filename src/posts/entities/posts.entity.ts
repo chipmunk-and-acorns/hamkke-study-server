@@ -1,11 +1,11 @@
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { JoinType, PostType } from '../const/type.const';
-import { BaseModel } from 'src/common/entities/base.entity';
-import { UsersModel } from 'src/users/entities/users.entity';
+import { BaseModel } from '../../common/entities/base.entity';
+import { UsersModel } from '../../users/entities/users.entity';
 import { IsDate, IsEnum, IsNumber, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { QuestionsModel } from 'src/questions/entities/questions.entity';
-import { ParticipationsModel } from 'src/participations/entities/participations.entity';
+import { QuestionsModel } from '../../questions/entities/questions.entity';
+import { ParticipationsModel } from '../../participations/entities/participations.entity';
 
 @Entity({
   name: 'posts',
@@ -74,6 +74,7 @@ export class PostsModel extends BaseModel {
     nullable: false,
     default: JoinType.INSTANT,
   })
+  @IsEnum(JoinType)
   joinType: JoinType;
 
   @OneToMany(() => QuestionsModel, (question) => question.post, {

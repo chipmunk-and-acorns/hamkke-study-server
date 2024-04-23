@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { ParticipationsStatus } from '../const/type.const';
-import { BaseModel } from 'src/common/entities/base.entity';
-import { PostsModel } from 'src/posts/entities/posts.entity';
-import { UsersModel } from 'src/users/entities/users.entity';
+import { BaseModel } from '../../common/entities/base.entity';
+import { PostsModel } from '../../posts/entities/posts.entity';
+import { UsersModel } from '../../users/entities/users.entity';
 
 @Entity({ name: 'participations' })
 export class ParticipationsModel extends BaseModel {
