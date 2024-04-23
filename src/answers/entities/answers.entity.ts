@@ -1,6 +1,6 @@
 import { BaseModel } from '../../common/entities/base.entity';
-import { QuestionsModel } from 'src/questions/entities/questions.entity';
-import { UsersModel } from 'src/users/entities/users.entity';
+import { QuestionsModel } from '../../questions/entities/questions.entity';
+import { UsersModel } from '../..//users/entities/users.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'answers' })

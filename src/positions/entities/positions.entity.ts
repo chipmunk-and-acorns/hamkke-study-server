@@ -1,12 +1,12 @@
 import { IsNotEmpty } from 'class-validator';
-import { BaseModel } from 'src/common/entities/base.entity';
+import { BaseModel } from '../../common/entities/base.entity';
 import { Column, Entity } from 'typeorm';
 
 @Entity({ name: 'positions' })
 export class PositionsModel extends BaseModel {
   @Column({
     type: 'varchar',
-    length: 10,
+    length: 20,
     nullable: false,
   })
   @IsNotEmpty()

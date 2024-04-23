@@ -5,8 +5,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { PostsModel } from 'src/posts/entities/posts.entity';
-import { AnswersModel } from 'src/answers/entities/answers.entity';
+import { PostsModel } from '../../posts/entities/posts.entity';
+import { AnswersModel } from '../../answers/entities/answers.entity';
 
 @Entity({ name: 'questions' })
 export class QuestionsModel {

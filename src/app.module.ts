@@ -1,5 +1,6 @@
 import type { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
+import * as dotenv from 'dotenv';
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -17,7 +18,8 @@ import { ParticipationsModule } from './participations/participations.module';
 import { AnswersModule } from './answers/answers.module';
 import { StacksModule } from './stacks/stacks.module';
 import { PositionsModule } from './positions/positions.module';
-import config from './ormconfig';
+
+dotenv.config();
 
 @Module({
   imports: [
@@ -25,7 +27,20 @@ import config from './ormconfig';
       envFilePath: '.env',
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot(config),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.POSTGRES_HOST,
+      port: parseInt(process.env.POSTGRES_PORT),
+      username: process.env.POSTGRES_USERNAME,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DATABASE,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      logging: true,
+      synchronize: true,
+      migrationsRun: false,
+      migrations: [__dirname + '/migrations/data/**/*{.ts,.js}'],
+      migrationsTableName: 'src/migrations/log',
+    }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
       host: 'redis',
