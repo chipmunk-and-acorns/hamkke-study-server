@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { JoinType, PostType } from '../const/type.const';
-import { BaseModel } from 'src/common/entities/base.entity';
+import { BaseModel } from '../../common/entities/base.entity';
 import { UsersModel } from 'src/users/entities/users.entity';
 import { IsDate, IsEnum, IsNumber, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';

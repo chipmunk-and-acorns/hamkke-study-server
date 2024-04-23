@@ -1,4 +1,4 @@
-import { BaseModel } from 'src/common/entities/base.entity';
+import { BaseModel } from '../../common/entities/base.entity';
 import { QuestionsModel } from 'src/questions/entities/questions.entity';
 import { UsersModel } from 'src/users/entities/users.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
