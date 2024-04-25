@@ -6,6 +6,7 @@ import { BaseModel } from '../../common/entities/base.entity';
 import { PostsModel } from '../../posts/entities/posts.entity';
 import { AnswersModel } from '../../answers/entities/answers.entity';
 import { ParticipationsModel } from '../../participations/entities/participations.entity';
+import { CommentsModel } from 'src/comments/entities/comments.entity';
 
 @Entity({
   name: 'users',
@@ -48,12 +49,21 @@ export class UsersModel extends BaseModel {
   })
   role: UserRole;
 
-  @OneToMany(() => PostsModel, (post) => post.user)
+  @OneToMany(() => PostsModel, (post) => post.user, { cascade: ['remove'] })
   posts: PostsModel[];
 
-  @OneToMany(() => AnswersModel, (answer) => answer.user)
+  @OneToMany(() => AnswersModel, (answer) => answer.user, {
+    cascade: ['remove'],
+  })
   answers: AnswersModel[];
 
-  @OneToMany(() => ParticipationsModel, (participation) => participation.user)
+  @OneToMany(() => ParticipationsModel, (participation) => participation.user, {
+    cascade: ['remove'],
+  })
   participations: ParticipationsModel[];
+
+  @OneToMany(() => CommentsModel, (comment) => comment.user, {
+    cascade: ['remove'],
+  })
+  comments: CommentsModel[];
 }

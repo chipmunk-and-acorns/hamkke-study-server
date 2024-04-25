@@ -1,16 +1,19 @@
 import { BaseModel } from '../../common/entities/base.entity';
 import { QuestionsModel } from '../../questions/entities/questions.entity';
 import { UsersModel } from '../..//users/entities/users.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'answers' })
 export class AnswersModel extends BaseModel {
-  @ManyToOne(() => QuestionsModel, (question) => question.answers, {
+  @ManyToOne(() => QuestionsModel, {
     onDelete: 'CASCADE',
+    nullable: false,
   })
+  @JoinColumn({ name: 'question_id' })
   question: QuestionsModel;
 
-  @ManyToOne(() => UsersModel, (user) => user.answers)
+  @ManyToOne(() => UsersModel, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'user_id' })
   user: UsersModel;
 
   @Column({
