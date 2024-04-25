@@ -18,6 +18,7 @@ import { ParticipationsModule } from './participations/participations.module';
 import { AnswersModule } from './answers/answers.module';
 import { StacksModule } from './stacks/stacks.module';
 import { PositionsModule } from './positions/positions.module';
+import { CommentsModule } from './comments/comments.module';
 
 dotenv.config();
 
@@ -55,6 +56,7 @@ dotenv.config();
     QuestionsModule,
     StacksModule,
     UsersModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [

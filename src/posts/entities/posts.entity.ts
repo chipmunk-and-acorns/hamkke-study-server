@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { JoinType, PostType } from '../const/type.const';
 import { BaseModel } from '../../common/entities/base.entity';
 import { UsersModel } from '../../users/entities/users.entity';
@@ -6,6 +6,7 @@ import { IsDate, IsEnum, IsNumber, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { QuestionsModel } from '../../questions/entities/questions.entity';
 import { ParticipationsModel } from '../../participations/entities/participations.entity';
+import { CommentsModel } from 'src/comments/entities/comments.entity';
 
 @Entity({
   name: 'posts',
@@ -82,11 +83,19 @@ export class PostsModel extends BaseModel {
   })
   questions?: QuestionsModel[];
 
-  @OneToMany(() => ParticipationsModel, (participation) => participation.post)
+  @OneToMany(() => ParticipationsModel, (participation) => participation.post, {
+    cascade: ['remove'],
+  })
   participations: ParticipationsModel[];
 
-  @ManyToOne(() => UsersModel, (user) => user.posts, {
-    nullable: false,
+  @OneToMany(() => CommentsModel, (comment) => comment.post, {
+    cascade: ['remove'],
   })
+  comments: CommentsModel[];
+
+  @ManyToOne(() => UsersModel, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'user_id' })
   user: UsersModel;
 }

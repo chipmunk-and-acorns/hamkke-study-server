@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -19,9 +20,10 @@ export class QuestionsModel {
   })
   question: string;
 
-  @ManyToOne(() => PostsModel, (post) => post.questions, {
+  @ManyToOne(() => PostsModel, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'post_id' })
   post: PostsModel;
 
   @OneToMany(() => AnswersModel, (answer) => answer.question, {
