@@ -6,7 +6,7 @@ import { IsDate, IsEnum, IsNumber, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { QuestionsModel } from '../../questions/entities/questions.entity';
 import { ParticipationsModel } from '../../participations/entities/participations.entity';
-import { CommentsModel } from 'src/comments/entities/comments.entity';
+import { CommentsModel } from '../../comments/entities/comments.entity';
 
 @Entity({
   name: 'posts',

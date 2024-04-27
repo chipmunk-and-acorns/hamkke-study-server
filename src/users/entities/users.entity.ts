@@ -6,7 +6,7 @@ import { BaseModel } from '../../common/entities/base.entity';
 import { PostsModel } from '../../posts/entities/posts.entity';
 import { AnswersModel } from '../../answers/entities/answers.entity';
 import { ParticipationsModel } from '../../participations/entities/participations.entity';
-import { CommentsModel } from 'src/comments/entities/comments.entity';
+import { CommentsModel } from '../../comments/entities/comments.entity';
 
 @Entity({
   name: 'users',

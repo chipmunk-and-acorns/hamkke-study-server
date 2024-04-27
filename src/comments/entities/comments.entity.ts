@@ -1,7 +1,7 @@
 import { IsNotEmpty } from 'class-validator';
-import { BaseModel } from 'src/common/entities/base.entity';
-import { PostsModel } from 'src/posts/entities/posts.entity';
-import { UsersModel } from 'src/users/entities/users.entity';
+import { BaseModel } from '../../common/entities/base.entity';
+import { PostsModel } from '../../posts/entities/posts.entity';
+import { UsersModel } from '../../users/entities/users.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity({ name: 'comments' })
