@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { BaseModel } from './entities/base.entity';
 import { FILTER_MAPPER } from './const/filte-mappe-ont';
-import { ENV_HOST, ENV_PROTOCOL } from './const/env-keys.const';
+import { ENV_HOST, ENV_PORT, ENV_PROTOCOL } from './const/env-keys.const';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class CommonService {
     const nextUrl =
       lastItem &&
       new URL(
-        `${this.configService.get<string>(ENV_PROTOCOL)}://${this.configService.get<string>(ENV_HOST)}/${path}`,
+        `${this.configService.get<string>(ENV_PROTOCOL)}://${this.configService.get<string>(ENV_HOST)}:${this.configService.get<string>(ENV_PORT)}/${path}`,
       );
 
     if (nextUrl) {
