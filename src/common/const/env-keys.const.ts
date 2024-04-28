@@ -1,5 +1,6 @@
 export const ENV_PROTOCOL = 'PROTOCOL';
 export const ENV_HOST = 'HOST';
+export const ENV_PORT = 'PORT';
 
 // database
 export const ENV_POSTGRES_HOST_KEY = 'POSTGRES_HOST';

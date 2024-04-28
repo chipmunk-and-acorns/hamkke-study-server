@@ -2,12 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: process.env.CLIENT_ORIGIN,
   });
 
   app.useGlobalPipes(
@@ -17,7 +20,6 @@ async function bootstrap() {
         enableImplicitConversion: true,
       },
       whitelist: true,
-      // forbidNonWhitelisted: true,
     }),
   );
 
@@ -29,7 +31,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(5000);
+  await app.listen(process.env.PORT);
 }
 
 bootstrap();
