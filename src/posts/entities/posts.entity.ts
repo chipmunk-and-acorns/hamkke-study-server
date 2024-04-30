@@ -1,4 +1,12 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { JoinType, PostType } from '../const/type.const';
 import { BaseModel } from '../../common/entities/base.entity';
 import { UsersModel } from '../../users/entities/users.entity';
@@ -7,6 +15,8 @@ import { Transform } from 'class-transformer';
 import { QuestionsModel } from '../../questions/entities/questions.entity';
 import { ParticipationsModel } from '../../participations/entities/participations.entity';
 import { CommentsModel } from '../../comments/entities/comments.entity';
+import { StacksModel } from 'src/stacks/entities/stacks.entity';
+import { PositionsModel } from 'src/positions/entities/positions.entity';
 
 @Entity({
   name: 'posts',
@@ -98,4 +108,12 @@ export class PostsModel extends BaseModel {
   })
   @JoinColumn({ name: 'user_id' })
   user: UsersModel;
+
+  @ManyToMany(() => StacksModel)
+  @JoinTable()
+  stacks: StacksModel[];
+
+  @ManyToMany(() => PositionsModel)
+  @JoinTable()
+  positions: PositionsModel[];
 }

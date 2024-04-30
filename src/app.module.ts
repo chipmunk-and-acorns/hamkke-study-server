@@ -36,7 +36,7 @@ dotenv.config();
       database: process.env.POSTGRES_DATABASE,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       logging: true,
-      synchronize: true,
+      synchronize: Boolean(process.env.POSTGRES_SYNC),
       migrationsRun: false,
       migrations: [__dirname + '/migrations/data/**/*{.ts,.js}'],
       migrationsTableName: 'src/migrations/log',
