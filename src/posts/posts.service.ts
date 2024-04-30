@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { PostsModel } from './entities/posts.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post-dto';
@@ -27,18 +27,21 @@ export class PostsService {
     userId: number,
     createPostDto: CreatePostDto,
     questions: string[],
+    positions: number[],
+    stacks: number[],
   ) {
     const newPost = this.postsRepository.create({
       ...createPostDto,
       user: { id: userId },
+      stacks: stacks.map((id) => ({ id })),
+      positions: positions.map((id) => ({ id })),
     });
 
     const createPost = await this.postsRepository.save(newPost);
     const postId = createPost.id;
-    let createQuestions;
 
     if (questions) {
-      createQuestions = await Promise.all(
+      await Promise.all(
         questions.map(
           async (question) =>
             await this.questionsService.generateQuestions(postId, question),
@@ -46,7 +49,7 @@ export class PostsService {
       );
     }
 
-    return { ...createPost, questions: createQuestions ?? [] };
+    return createPost.id;
   }
 
   async getPosts() {
@@ -82,7 +85,7 @@ export class PostsService {
   async getPostByPostId(postId: number) {
     const post = await this.postsRepository.findOne({
       where: { id: postId },
-      relations: ['user', 'questions', 'participations'],
+      relations: ['user', 'questions', 'participations', 'stacks', 'positions'],
     });
 
     if (!post) {
@@ -96,6 +99,8 @@ export class PostsService {
     userId: number,
     postId: number,
     updatePostDto: UpdatePostDto,
+    positions: number[],
+    stacks: number[],
   ) {
     const post = await this.postsRepository.findOne({
       where: { id: postId },
@@ -118,7 +123,19 @@ export class PostsService {
     if (recruitCount) post.recruitCount = recruitCount;
     if (deadline) post.deadline = deadline;
 
-    return await this.postsRepository.save(post);
+    let updatePost = { ...post } as DeepPartial<PostsModel>;
+
+    if (positions) {
+      updatePost = { ...post, positions: positions.map((id) => ({ id })) };
+    }
+
+    if (stacks) {
+      updatePost = { ...post, stacks: stacks.map((id) => ({ id })) };
+    }
+
+    await this.postsRepository.save(updatePost);
+
+    return updatePost.id;
   }
 
   async completePost(userId: number, postId: number) {

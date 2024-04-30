@@ -17,6 +17,7 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post-dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
+import { ParseIntArrayPipe } from 'src/common/pipe/parse_int_array.pipe';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -29,9 +30,17 @@ export class PostsController {
   async postCreatePost(
     @User('id') userId: number,
     @Body('questions') questions: string[],
+    @Body('positions', ParseIntArrayPipe) positions: number[],
+    @Body('stacks', ParseIntArrayPipe) stacks: number[],
     @Body() createPostDto: CreatePostDto,
   ) {
-    return await this.postsService.createPost(userId, createPostDto, questions);
+    return await this.postsService.createPost(
+      userId,
+      createPostDto,
+      questions,
+      positions,
+      stacks,
+    );
   }
 
   @Post('random')
@@ -60,9 +69,17 @@ export class PostsController {
   async patchPost(
     @User('id') userId: number,
     @Param('id', ParseIntPipe) id: number,
+    @Body('positions') positions: number[],
+    @Body('stacks') stacks: number[],
     @Body() updatePostDto: UpdatePostDto,
   ) {
-    return await this.postsService.updatePost(userId, id, updatePostDto);
+    return await this.postsService.updatePost(
+      userId,
+      id,
+      updatePostDto,
+      positions,
+      stacks,
+    );
   }
 
   @Patch('complete/:id')
