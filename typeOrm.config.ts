@@ -10,6 +10,7 @@ import { QuestionsModel } from './src/questions/entities/questions.entity';
 import { StacksModel } from './src/stacks/entities/stacks.entity';
 import { UsersModel } from './src/users/entities/users.entity';
 import { CommentsModel } from './src/comments/entities/comments.entity';
+import { BookmarksModel } from './src/bookmarks/entities/bookmark.entity';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ export default new DataSource({
     AnswersModel,
     StacksModel,
     CommentsModel,
+    BookmarksModel,
   ],
   migrations: [__dirname + '/migrations/**'],
 });

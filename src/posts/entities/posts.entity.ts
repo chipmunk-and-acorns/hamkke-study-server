@@ -7,16 +7,17 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
+import { IsDate, IsEnum, IsNumber, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { JoinType, PostType } from '../const/type.const';
 import { BaseModel } from '../../common/entities/base.entity';
 import { UsersModel } from '../../users/entities/users.entity';
-import { IsDate, IsEnum, IsNumber, IsString } from 'class-validator';
-import { Transform } from 'class-transformer';
 import { QuestionsModel } from '../../questions/entities/questions.entity';
 import { ParticipationsModel } from '../../participations/entities/participations.entity';
 import { CommentsModel } from '../../comments/entities/comments.entity';
-import { StacksModel } from 'src/stacks/entities/stacks.entity';
-import { PositionsModel } from 'src/positions/entities/positions.entity';
+import { StacksModel } from '../../stacks/entities/stacks.entity';
+import { PositionsModel } from '../../positions/entities/positions.entity';
+import { BookmarksModel } from '../../bookmarks/entities/bookmark.entity';
 
 @Entity({
   name: 'posts',
@@ -102,6 +103,11 @@ export class PostsModel extends BaseModel {
     cascade: ['remove'],
   })
   comments: CommentsModel[];
+
+  @OneToMany(() => BookmarksModel, (bookmark) => bookmark.post, {
+    cascade: ['remove'],
+  })
+  bookmarkedBy: BookmarksModel[];
 
   @ManyToOne(() => UsersModel, {
     onDelete: 'SET NULL',

@@ -19,6 +19,7 @@ import { AnswersModule } from './answers/answers.module';
 import { StacksModule } from './stacks/stacks.module';
 import { PositionsModule } from './positions/positions.module';
 import { CommentsModule } from './comments/comments.module';
+import { BookmarkModule } from './bookmarks/bookmark.module';
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ dotenv.config();
     StacksModule,
     UsersModule,
     CommentsModule,
+    BookmarkModule,
   ],
   controllers: [AppController],
   providers: [
