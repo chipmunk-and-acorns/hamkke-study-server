@@ -18,5 +18,6 @@ import { QuestionsModule } from 'src/questions/questions.module';
   ],
   controllers: [PostsController],
   providers: [PostsService],
+  exports: [PostsService],
 })
 export class PostsModule {}

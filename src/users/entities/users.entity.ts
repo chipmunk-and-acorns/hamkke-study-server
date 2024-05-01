@@ -7,6 +7,7 @@ import { PostsModel } from '../../posts/entities/posts.entity';
 import { AnswersModel } from '../../answers/entities/answers.entity';
 import { ParticipationsModel } from '../../participations/entities/participations.entity';
 import { CommentsModel } from '../../comments/entities/comments.entity';
+import { BookmarksModel } from '../../bookmarks/entities/bookmark.entity';
 
 @Entity({
   name: 'users',
@@ -66,4 +67,9 @@ export class UsersModel extends BaseModel {
     cascade: ['remove'],
   })
   comments: CommentsModel[];
+
+  @OneToMany(() => BookmarksModel, (bookmark) => bookmark.user, {
+    cascade: ['remove'],
+  })
+  bookmarks: BookmarksModel[];
 }
