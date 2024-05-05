@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
 import { CreatePostDto } from './create-post.dto';
-import { PostType } from '../const/type.const';
+import { JoinType, PostType } from '../const/type.const';
 
 export class UpdatePostDto extends PartialType(CreatePostDto) {
   @IsString()
@@ -29,4 +29,20 @@ export class UpdatePostDto extends PartialType(CreatePostDto) {
   @IsDate()
   @IsOptional()
   deadline?: Date;
+
+  @IsEnum(JoinType)
+  @IsOptional()
+  joinType?: JoinType;
+
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  positions?: number[];
+
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  stacks?: number[];
+
+  @IsString({ each: true })
+  @IsOptional()
+  questions?: string[];
 }

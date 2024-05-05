@@ -22,6 +22,7 @@ export class QuestionsModel {
 
   @ManyToOne(() => PostsModel, {
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'post_id' })
   post: PostsModel;

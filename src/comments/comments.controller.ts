@@ -37,7 +37,6 @@ export class CommentsController {
     @User('id') userId: number,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    console.log(createCommentDto);
     return await this.commentsService.createComment(userId, createCommentDto);
   }
 
@@ -54,7 +53,6 @@ export class CommentsController {
     @Param('id', ParseIntPipe) id: number,
     @Body('content') content: string,
   ) {
-    console.log(userId, id, content);
     return await this.commentsService.updateComment(userId, id, content);
   }
 
