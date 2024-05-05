@@ -47,7 +47,6 @@ export class PostsController {
   @UseGuards(AccessTokenGuard)
   async postPostsRandom(@User('id') userId: number) {
     await this.postsService.generatePosts(userId);
-
     return true;
   }
 
@@ -68,18 +67,10 @@ export class PostsController {
   @UseGuards(AccessTokenGuard)
   async patchPost(
     @User('id') userId: number,
-    @Param('id', ParseIntPipe) id: number,
-    @Body('positions') positions: number[],
-    @Body('stacks') stacks: number[],
+    @Param('id', ParseIntPipe) postId: number,
     @Body() updatePostDto: UpdatePostDto,
   ) {
-    return await this.postsService.updatePost(
-      userId,
-      id,
-      updatePostDto,
-      positions,
-      stacks,
-    );
+    return await this.postsService.updatePost(userId, postId, updatePostDto);
   }
 
   @Patch('complete/:id')

@@ -90,22 +90,22 @@ export class PostsModel extends BaseModel {
   joinType: JoinType;
 
   @OneToMany(() => QuestionsModel, (question) => question.post, {
-    cascade: ['remove'],
+    cascade: ['remove', 'update', 'insert'],
   })
   questions?: QuestionsModel[];
 
   @OneToMany(() => ParticipationsModel, (participation) => participation.post, {
-    cascade: ['remove'],
+    cascade: ['remove', 'update', 'insert'],
   })
   participations: ParticipationsModel[];
 
   @OneToMany(() => CommentsModel, (comment) => comment.post, {
-    cascade: ['remove'],
+    cascade: ['remove', 'update', 'insert'],
   })
   comments: CommentsModel[];
 
   @OneToMany(() => BookmarksModel, (bookmark) => bookmark.post, {
-    cascade: ['remove'],
+    cascade: ['remove', 'update', 'insert'],
   })
   bookmarkedBy: BookmarksModel[];
 
