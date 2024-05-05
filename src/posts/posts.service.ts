@@ -85,7 +85,14 @@ export class PostsService {
   async getPostByPostId(postId: number) {
     const post = await this.postsRepository.findOne({
       where: { id: postId },
-      relations: ['user', 'questions', 'participations', 'stacks', 'positions'],
+      relations: [
+        'user',
+        'questions',
+        'participations',
+        'participations.user',
+        'stacks',
+        'positions',
+      ],
     });
 
     if (!post) {
