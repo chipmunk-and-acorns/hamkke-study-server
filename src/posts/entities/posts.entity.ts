@@ -116,10 +116,30 @@ export class PostsModel extends BaseModel {
   user: UsersModel;
 
   @ManyToMany(() => StacksModel)
-  @JoinTable()
+  @JoinTable({
+    name: 'posts_stacks',
+    joinColumn: {
+      name: 'post_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'stack_id',
+      referencedColumnName: 'id',
+    },
+  })
   stacks: StacksModel[];
 
   @ManyToMany(() => PositionsModel)
-  @JoinTable()
+  @JoinTable({
+    name: 'posts_positions',
+    joinColumn: {
+      name: 'post_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'position_id',
+      referencedColumnName: 'id',
+    },
+  })
   positions: PositionsModel[];
 }

@@ -10,7 +10,6 @@ import { PostsModel } from './entities/posts.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post-dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
-import { CommonService } from 'src/common/common.service';
 import { JoinType, PostType } from './const/type.const';
 import { QuestionsService } from 'src/questions/questions.service';
 
@@ -19,7 +18,6 @@ export class PostsService {
   constructor(
     @InjectRepository(PostsModel)
     private readonly postsRepository: Repository<PostsModel>,
-    private readonly commonService: CommonService,
     private readonly questionsService: QuestionsService,
   ) {}
 
@@ -59,12 +57,44 @@ export class PostsService {
   }
 
   async paginatePosts(dto: PaginatePostDto) {
-    return await this.commonService.paginate(
-      dto,
-      this.postsRepository,
-      { relations: ['user'] },
-      'posts',
-    );
+    const where = this.createWhereFilter(dto);
+
+    const query = this.postsRepository
+      .createQueryBuilder('posts')
+      .leftJoinAndSelect('posts.user', 'user')
+      .leftJoinAndSelect('posts.stacks', 'stacks')
+      .leftJoinAndSelect('posts.positions', 'positions')
+      .where(where);
+
+    if (dto.stacks.length > 0) {
+      query.andWhere(
+        'posts.id IN (SELECT p.id FROM posts p INNER JOIN posts_stacks ps ON p.id = ps.post_id WHERE ps.stack_id IN (:...stackIds))',
+        { stackIds: dto.stacks },
+      );
+    }
+
+    if (dto.positions.length > 0) {
+      query.andWhere(
+        'posts.id IN (SELECT p.id FROM posts p INNER JOIN posts_positions pp ON p.id = pp.post_id WHERE pp.position_id IN (:...positionIds))',
+        { positionIds: dto.positions },
+      );
+    }
+
+    return await query
+      .orderBy('posts.createdAt', dto.order)
+      .take(dto.take)
+      .getMany();
+  }
+
+  private createWhereFilter(dto: PaginatePostDto) {
+    let where = 'TRUE';
+
+    if (dto.id) {
+      const condition = dto.order === 'DESC' ? '<=' : '>=';
+      where = `posts.id ${condition} ${dto.id}`;
+    }
+
+    return where;
   }
 
   async generatePosts(userId: number) {
