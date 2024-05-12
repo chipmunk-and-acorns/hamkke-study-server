@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BookmarkService } from './bookmark.service';
-import { BearerTokenGuard } from 'src/auth/guard/bearer-token.guard';
+import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
 
 @Controller('bookmarks')
@@ -15,7 +15,7 @@ export class BookmarkController {
   constructor(private readonly bookmarkService: BookmarkService) {}
 
   @Post(':id')
-  @UseGuards(BearerTokenGuard)
+  @UseGuards(AccessTokenGuard)
   async postToggleBookmark(
     @User('id') userId: number,
     @Param('id', ParseIntPipe) postId: number,
@@ -24,7 +24,7 @@ export class BookmarkController {
   }
 
   @Get()
-  @UseGuards(BearerTokenGuard)
+  @UseGuards(AccessTokenGuard)
   async getBookmarkPost(@User('id') userId: number) {
     return await this.bookmarkService.getPostByUser(userId);
   }
