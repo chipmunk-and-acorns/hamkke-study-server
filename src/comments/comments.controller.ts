@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { BearerTokenGuard } from 'src/auth/guard/bearer-token.guard';
+import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
 import { CreateCommentDto } from './dto/create-comment.dto';
 
@@ -19,7 +19,7 @@ export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Post('/random')
-  @UseGuards(BearerTokenGuard)
+  @UseGuards(AccessTokenGuard)
   async postCreateRandomComment(@User('id') userId: number) {
     for (let i = 1; i <= 100; i++) {
       await this.commentsService.createComment(userId, {
@@ -32,7 +32,7 @@ export class CommentsController {
   }
 
   @Post()
-  @UseGuards(BearerTokenGuard)
+  @UseGuards(AccessTokenGuard)
   async postCreateComment(
     @User('id') userId: number,
     @Body() createCommentDto: CreateCommentDto,
@@ -47,7 +47,7 @@ export class CommentsController {
 
   //댓글 수정하기
   @Patch(':id')
-  @UseGuards(BearerTokenGuard)
+  @UseGuards(AccessTokenGuard)
   async patchComment(
     @User('id') userId: number,
     @Param('id', ParseIntPipe) id: number,
@@ -58,7 +58,7 @@ export class CommentsController {
 
   //댓글 삭제하기
   @Delete(':id')
-  @UseGuards(BearerTokenGuard)
+  @UseGuards(AccessTokenGuard)
   async deleteComment(
     @User('id') userId: number,
     @Param('id', ParseIntPipe) id: number,

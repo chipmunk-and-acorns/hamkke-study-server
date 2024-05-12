@@ -1,20 +1,9 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Headers,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Headers, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BasicTokenGuard } from './guard/basic-token.guard';
-import {
-  BearerTokenGuard,
-  RefreshTokenGuard,
-} from './guard/bearer-token.guard';
+import { RefreshTokenGuard } from './guard/bearer-token.guard';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { User } from 'src/users/decorator/user.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -59,11 +48,5 @@ export class AuthController {
     return {
       refreshToken: newToken,
     };
-  }
-
-  @Get('me')
-  @UseGuards(BearerTokenGuard)
-  async getMe(@User() user) {
-    return user;
   }
 }

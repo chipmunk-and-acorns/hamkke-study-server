@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { IsEmail, IsString, Length } from 'class-validator';
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 import { UserRole } from '../const/roles.const';
 import { BaseModel } from '../../common/entities/base.entity';
 import { PostsModel } from '../../posts/entities/posts.entity';
@@ -8,6 +8,8 @@ import { AnswersModel } from '../../answers/entities/answers.entity';
 import { ParticipationsModel } from '../../participations/entities/participations.entity';
 import { CommentsModel } from '../../comments/entities/comments.entity';
 import { BookmarksModel } from '../../bookmarks/entities/bookmark.entity';
+import { join } from 'path';
+import { USER_PUBLIC_IMAGE_PATH } from 'src/common/const/path.const';
 
 @Entity({
   name: 'users',
@@ -49,6 +51,12 @@ export class UsersModel extends BaseModel {
     nullable: false,
   })
   role: UserRole;
+
+  @Column({
+    nullable: true,
+  })
+  @Transform(({ value }) => value && `/${join(USER_PUBLIC_IMAGE_PATH, value)}`)
+  image?: string;
 
   @OneToMany(() => PostsModel, (post) => post.user, { cascade: ['remove'] })
   posts: PostsModel[];

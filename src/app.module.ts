@@ -20,6 +20,8 @@ import { StacksModule } from './stacks/stacks.module';
 import { PositionsModule } from './positions/positions.module';
 import { CommentsModule } from './comments/comments.module';
 import { BookmarkModule } from './bookmarks/bookmark.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
 
 dotenv.config();
 
@@ -46,6 +48,10 @@ dotenv.config();
       store: redisStore,
       host: process.env.REDIS_HOST,
       port: 6379,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: PUBLIC_FOLDER_PATH,
+      serveRoot: '/public',
     }),
     AnswersModule,
     AuthModule,

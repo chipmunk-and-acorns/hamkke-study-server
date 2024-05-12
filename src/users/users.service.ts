@@ -38,4 +38,14 @@ export class UsersService {
   async getUserByEmail(email: string) {
     return await this.usersRepository.findOne({ where: { email } });
   }
+
+  async uploadImage(userId: number, image?: string) {
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+
+    user.image = image || null;
+
+    await this.usersRepository.save(user);
+
+    return image;
+  }
 }
