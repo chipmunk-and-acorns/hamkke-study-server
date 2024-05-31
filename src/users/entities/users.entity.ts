@@ -9,7 +9,7 @@ import { ParticipationsModel } from '../../participations/entities/participation
 import { CommentsModel } from '../../comments/entities/comments.entity';
 import { BookmarksModel } from '../../bookmarks/entities/bookmark.entity';
 import { join } from 'path';
-import { USER_PUBLIC_IMAGE_PATH } from 'src/common/const/path.const';
+import { USER_PUBLIC_IMAGE_PATH } from '../../common/const/path.const';
 
 @Entity({
   name: 'users',
