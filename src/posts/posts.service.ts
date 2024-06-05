@@ -12,6 +12,8 @@ import { UpdatePostDto } from './dto/update-post-dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
 import { JoinType, PostType } from './const/type.const';
 import { QuestionsService } from 'src/questions/questions.service';
+import { ConfigService } from '@nestjs/config';
+import { ENV_HOST, ENV_PROTOCOL } from 'src/common/const/env-keys.const';
 
 @Injectable()
 export class PostsService {
@@ -19,6 +21,7 @@ export class PostsService {
     @InjectRepository(PostsModel)
     private readonly postsRepository: Repository<PostsModel>,
     private readonly questionsService: QuestionsService,
+    private readonly configService: ConfigService,
   ) {}
 
   async createPost(
@@ -80,16 +83,51 @@ export class PostsService {
       );
     }
 
-    return await query
+    const data = await query
       .orderBy('posts.createdAt', dto.order)
       .take(dto.take)
       .getMany();
+
+    const lastItem = data[data.length - 1];
+
+    let nextUrl = null;
+    let lastPage = true;
+
+    if (lastItem) {
+      nextUrl = new URL(
+        `${this.configService.get<string>(ENV_PROTOCOL)}://${this.configService.get<string>(ENV_HOST)}/posts`,
+      );
+
+      for (const key of Object.keys(dto)) {
+        if (key !== 'id' && dto[key]) {
+          if (Array.isArray(dto[key])) {
+            dto[key].length > 0 && nextUrl.searchParams.append(key, dto[key]);
+          } else {
+            nextUrl.searchParams.append(key, dto[key]);
+          }
+        }
+      }
+
+      nextUrl.searchParams.append(
+        'id',
+        dto.order === 'ASC' ? lastItem.id + 1 : lastItem.id - 1,
+      );
+      lastPage = false;
+    }
+
+    return {
+      data,
+      info: {
+        nextUrl: nextUrl && nextUrl.toString(),
+        lastPage,
+      },
+    };
   }
 
   private createWhereFilter(dto: PaginatePostDto) {
     let where = 'TRUE';
 
-    if (dto.id) {
+    if (typeof dto.id === 'number') {
       const condition = dto.order === 'DESC' ? '<=' : '>=';
       where = `posts.id ${condition} ${dto.id}`;
     }
